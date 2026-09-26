@@ -13,13 +13,93 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Models">
+      <UniqueIdentifier>{0e5d7dc5-06fe-46c7-8ed0-86cea9969452}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawableObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="shaders\basic.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\basic.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\blue.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\red.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="models\bushes.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\gift.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\plain.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\sphere.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\suzi_flat.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\suzi_smooth.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\tree.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Callbacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawableObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
