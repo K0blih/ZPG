@@ -111,7 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\glm;$(ProjectDir)libs\glad\include;$(ProjectDir)models</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\glm;$(ProjectDir)libs\glad\include;$(ProjectDir)models;$(ProjectDir)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,27 +142,21 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="Callbacks.cpp" />
-    <ClCompile Include="DrawableObject.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="ShaderProgram.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="README.md" />
     <None Include="shaders\basic.frag" />
     <None Include="shaders\basic.vert" />
     <None Include="shaders\blue.frag" />
     <None Include="shaders\red.frag" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="Callbacks.h" />
-    <ClInclude Include="DrawableObject.h" />
-    <ClInclude Include="Model.h" />
+    <ClInclude Include="include\Application.h" />
+    <ClInclude Include="include\Callbacks.h" />
+    <ClInclude Include="include\DrawableObject.h" />
+    <ClInclude Include="include\Model.h" />
+    <ClInclude Include="include\Scene.h" />
+    <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\ShaderProgram.h" />
     <ClInclude Include="models\bushes.h" />
     <ClInclude Include="models\gift.h" />
     <ClInclude Include="models\plain.h" />
@@ -170,9 +164,16 @@
     <ClInclude Include="models\suzi_flat.h" />
     <ClInclude Include="models\suzi_smooth.h" />
     <ClInclude Include="models\tree.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShaderProgram.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Callbacks.cpp" />
+    <ClCompile Include="src\DrawableObject.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\ShaderProgram.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
