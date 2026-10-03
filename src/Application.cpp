@@ -74,6 +74,7 @@ void Application::createScene()
 	scenes[1].createSphere();
 	scenes[2].createForest();
 	scenes[3].createLogin();
+	signature.createSignature();
 }
 
 void Application::switchScene(int index)
@@ -93,6 +94,7 @@ void Application::run()
 		
 		// Draw a triangles
 		scenes[activeScene].draw();
+		signature.draw();
 
 		// Display the rendered frame and process events
 		glfwSwapBuffers(window);

@@ -21,6 +21,7 @@ public:
 private:
 	GLFWwindow* window = nullptr;
 	bool glfwinitialized = false;
+	Scene signature;
 	Scene scenes[4];
 	int activeScene = 0;
 

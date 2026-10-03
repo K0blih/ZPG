@@ -9,8 +9,6 @@
 #include <tree.h>
 #include <CHO0289.h>
 
-//#include <openGL.h>
-
 Model& Scene::addModel(const float* vertices, std::size_t floatCount, GLenum drawingMode)
 {
     auto model = std::make_unique<Model>();
@@ -33,6 +31,25 @@ DrawableObject& Scene::addObject(Model& model, ShaderProgram& shaderProgram)
 {
     objects.push_back(std::make_unique<DrawableObject>(model, shaderProgram));
     return *objects.back();
+}
+
+void Scene::createSignature()
+{
+    clear();
+
+    // Create and compile the vertex and fragment shaders
+    Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
+    Shader fragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
+
+    // Create and link the shader program 
+    ShaderProgram& program = addShaderProgram(vertex, fragment);
+
+    Model& mesh = addModel(cho0289, std::size(cho0289), GL_TRIANGLES);
+
+    DrawableObject& login = addObject(mesh, program);
+
+    login.setScale(0.15f);
+    login.setTranslation(0.83f, -0.95f, 0.0f);
 }
 
 void Scene::createTriangle()

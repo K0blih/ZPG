@@ -20,6 +20,7 @@ public:
 	ShaderProgram& addShaderProgram(const Shader& vertexShader, const Shader& fragmentShader);
 	DrawableObject& addObject(Model& model, ShaderProgram& shaderProgram);
 
+	void createSignature();
 	void createTriangle();
 	void createSphere();
 	void createForest();
