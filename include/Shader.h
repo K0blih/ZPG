@@ -10,7 +10,8 @@ public:
     Shader(const Shader&) = delete;
     Shader& operator=(const Shader&) = delete;
 
-    GLuint getShaderId() const { return shaderId; }
+	void attachTo(GLuint programId) const;
+	void detachFrom(GLuint programId) const;
 
 private:
     GLuint shaderId = 0;

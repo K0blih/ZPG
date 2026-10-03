@@ -56,6 +56,9 @@ void Application::initialization()
 	glfwGetVersion(&major, &minor, &revision);
 	printf("Using GLFW %i.%i.%i\n", major, minor, revision);
 
+	// Associate this window with the application so callbacks can access it.
+	glfwSetWindowUserPointer(window, this);
+
 	// Register callbacks for the window
 	registerWindowCallbacks(window);
 
@@ -66,8 +69,19 @@ void Application::initialization()
 
 void Application::createScene()
 {
-	// Create the scene
-	scene.create();
+	// Create the scenes
+	scenes[0].createTriangle();
+	scenes[1].createSphere();
+	scenes[2].createForest();
+	scenes[3].createLogin();
+}
+
+void Application::switchScene(int index)
+{
+	if (index >= 0 && index < 4)
+	{
+		activeScene = index;
+	}
 }
 
 void Application::run()
@@ -78,7 +92,7 @@ void Application::run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		// Draw a triangles
-		scene.draw();
+		scenes[activeScene].draw();
 
 		// Display the rendered frame and process events
 		glfwSwapBuffers(window);
@@ -90,7 +104,10 @@ Application::~Application()
 {
 	if (window)
 	{
-		scene.clear();
+		for (Scene& scene : scenes)
+		{
+			scene.clear();
+		}
 		glfwDestroyWindow(window);
 	}
 

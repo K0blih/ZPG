@@ -15,10 +15,13 @@ public:
 
 	void initialization();
 	void createScene();
+	void switchScene(int index);
 	void run();
 
 private:
 	GLFWwindow* window = nullptr;
-	Scene scene;
 	bool glfwinitialized = false;
+	Scene scenes[4];
+	int activeScene = 0;
+
 };

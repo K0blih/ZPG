@@ -20,7 +20,10 @@ public:
 	ShaderProgram& addShaderProgram(const Shader& vertexShader, const Shader& fragmentShader);
 	DrawableObject& addObject(Model& model, ShaderProgram& shaderProgram);
 
-	void create();
+	void createTriangle();
+	void createSphere();
+	void createForest();
+	void createLogin();
 	void draw();
 	void clear();
 
@@ -28,4 +31,8 @@ private:
 	std::vector<std::unique_ptr<Model>> models;
 	std::vector<std::unique_ptr<ShaderProgram>> shaderPrograms;
 	std::vector<std::unique_ptr<DrawableObject>> objects;
+
+	// will be removed in the future, just for testing purposes
+	bool spinning = false;
+	float rotationAngle = 0.0f;
 };

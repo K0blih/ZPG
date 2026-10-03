@@ -5,6 +5,11 @@
 
 // Include models
 #include <sphere.h>
+#include <bushes.h>
+#include <tree.h>
+#include <CHO0289.h>
+
+//#include <openGL.h>
 
 Model& Scene::addModel(const float* vertices, std::size_t floatCount, GLenum drawingMode)
 {
@@ -30,17 +35,15 @@ DrawableObject& Scene::addObject(Model& model, ShaderProgram& shaderProgram)
     return *objects.back();
 }
 
-void Scene::create()
+void Scene::createTriangle()
 {
+    clear();
+
     // Create and compile the vertex and fragment shaders
-    Shader vertex(GL_VERTEX_SHADER, "shaders/basic.vert");
+    Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
     Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
-    Shader redFragment(GL_FRAGMENT_SHADER, "shaders/red.frag");
-    Shader blueFragment(GL_FRAGMENT_SHADER, "shaders/blue.frag");
 
     // Create and link the shader program 
-    ShaderProgram& red = addShaderProgram(vertex, redFragment);
-    ShaderProgram& blue = addShaderProgram(vertex, blueFragment);
     ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
 
 	float triangle[] = {
@@ -49,33 +52,101 @@ void Scene::create()
          0.0f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f
     };
 
-    float square[] = {
-        -0.5f, -0.5f, 0.0f,    1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,
-        0.5f,  0.5f, 0.0f,    0.0f, 0.0f, 1.0f,
-        -0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 0.0f
-	};
+    Model& triangleMesh = addModel(triangle, std::size(triangle), GL_TRIANGLES);
 
-    Model& triangleMesh = addModel(
-        triangle, std::size(triangle), GL_TRIANGLES
-    );
+	addObject(triangleMesh, basic);
+}
 
-    Model& squareMesh = addModel(
-        square, std::size(square), GL_TRIANGLE_FAN
-    );
+void Scene::createSphere()
+{
+    clear();
+    spinning = true;
 
-    Model& sphereMesh = addModel(
-        sphere, std::size(sphere), GL_TRIANGLES
-    );
+	// Create and compile the vertex and fragment shaders
+	Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
+	Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
 
-    addObject(triangleMesh, red);
-	addObject(squareMesh, blue);
+	// Create and link the shader program 
+	ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
+
+	Model& sphereMesh = addModel(sphere, std::size(sphere), GL_TRIANGLES);
+
+	addObject(sphereMesh, basic);
+}
+
+void Scene::createForest()
+{
+    clear();
+
+    // Create and compile the vertex and fragment shaders
+    Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
+    Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
+    Shader sunFragment(GL_FRAGMENT_SHADER, "shaders/sun.frag");
+
+    // Create and link the shader program 
+    ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
+    ShaderProgram& sunProgram = addShaderProgram(vertex, sunFragment);
+
+    Model& treeMesh = addModel(tree, std::size(tree), GL_TRIANGLES);
+    Model& bushMesh = addModel(bushes, std::size(bushes), GL_TRIANGLES);
+    Model& sphereMesh = addModel(sphere, std::size(sphere), GL_TRIANGLES);
+
+    // 6 trees in the back row, 5 trees in the front row.
+    for (int i = 0; i < 6; i++)
+    {
+        DrawableObject& treeObject = addObject(treeMesh, basic);
+        treeObject.setScale(0.065f);
+        treeObject.setTranslation(-0.8f + i * 0.32f, -0.1f, 0.4f);
+    }
+    for (int i = 0; i < 5; i++)
+    {
+        DrawableObject& treeObject = addObject(treeMesh, basic);
+        treeObject.setScale(0.08f);
+        treeObject.setTranslation(-0.72f + i * 0.36f, -0.7f, -0.2f);
+    }
+
+    // 12 bushes along the bottom.
+    for (int i = 0; i < 11; i++)
+    {
+        DrawableObject& bushObject = addObject(bushMesh, basic);
+        bushObject.setScale(0.22f);
+        bushObject.setTranslation(-0.85f + i * 0.165f, -0.88f, -0.6f);
+    }
+
+    DrawableObject& sun = addObject(sphereMesh, sunProgram);
+    sun.setScale(0.13f);
+    sun.setTranslation(0.72f, 0.75f, 0.65f);
+}
+
+void Scene::createLogin()
+{
+    clear();
+    spinning = true;
+
+    // Create and compile the vertex and fragment shaders
+    Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
+	Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
+
+    // Create and link the shader program 
+	ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
+
+    Model& loginMesh = addModel(cho0289, std::size(cho0289), GL_TRIANGLES);
+
+	addObject(loginMesh, basic);
 }
 
 void Scene::draw()
 {
+    if (spinning)
+    {
+        rotationAngle += 0.01f;
+    }
     for (const auto& object : objects)
     {
+        if (spinning)
+        {
+            object->setRotationAngle(rotationAngle);
+        }
         object->draw();
     }
 }
@@ -85,6 +156,9 @@ void Scene::clear()
     objects.clear();
     models.clear();
     shaderPrograms.clear();
+
+    spinning = false;
+    rotationAngle = 0.0f;
 }
 
 Scene::~Scene()

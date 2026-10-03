@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/gl.h>
+#include <glm/vec3.hpp>
 
 class Shader;
 
@@ -16,8 +17,11 @@ public:
 	void use() const;
 	void reset();
 
-	GLuint getShaderProgramId() const { return shaderProgramId; }
+	void setUniform(const char* name, float value) const;
+	void setUniform(const char* name, const glm::vec3& value) const;
 
 private:
+	GLint getUniformLocation(const char* name) const;
+
 	GLuint shaderProgramId = 0;
 };

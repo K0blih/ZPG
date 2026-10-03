@@ -148,6 +148,9 @@
     <None Include="shaders\basic.vert" />
     <None Include="shaders\blue.frag" />
     <None Include="shaders\red.frag" />
+    <None Include="shaders\sun.frag" />
+    <None Include="shaders\transform2D.vert" />
+    <None Include="shaders\transform3D.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Application.h" />
@@ -157,8 +160,11 @@
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\ShaderProgram.h" />
+    <ClInclude Include="include\Transformation.h" />
     <ClInclude Include="models\bushes.h" />
+    <ClInclude Include="models\CHO0289.h" />
     <ClInclude Include="models\gift.h" />
+    <ClInclude Include="models\openGL.h" />
     <ClInclude Include="models\plain.h" />
     <ClInclude Include="models\sphere.h" />
     <ClInclude Include="models\suzi_flat.h" />
@@ -174,6 +180,7 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
+    <ClCompile Include="src\Transformation.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,4 +1,5 @@
 #include "Callbacks.h"
+#include "Application.h"
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -11,7 +12,27 @@ namespace {
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		{
 			glfwSetWindowShouldClose(window, GL_TRUE);
+		}
+
+		Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+		if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+		{
+			app->switchScene(0);
+		}
+		if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+		{
+			app->switchScene(1);
+		}
+		if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+		{
+			app->switchScene(2);
+		}
+		if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+		{
+			app->switchScene(3);
+		}
 		printf("key_callback [%d,%d,%d,%d] \n", key, scancode, action, mods);
 	}
 
@@ -29,7 +50,10 @@ namespace {
 
 	void button_callback(GLFWwindow* window, int button, int action, int mode)
 	{
-		if (action == GLFW_PRESS) printf("button_callback [%d,%d,%d]\n", button, action, mode);
+		if (action == GLFW_PRESS)
+		{
+			printf("button_callback [%d,%d,%d]\n", button, action, mode);
+		}
 	}
 } //namespace
 
