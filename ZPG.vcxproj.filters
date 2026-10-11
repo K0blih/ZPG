@@ -37,9 +37,6 @@
     <None Include="shaders\red.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\transform2D.vert">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="shaders\transform3D.vert">
       <Filter>Shaders</Filter>
     </None>
@@ -117,10 +114,10 @@
     <ClInclude Include="include\transformations\StaticTransformation.h">
       <Filter>Header Files\Transformations</Filter>
     </ClInclude>
-    <ClInclude Include="include\transformations\Transformation.h">
+    <ClInclude Include="include\transformations\TransformationFactory.h">
       <Filter>Header Files\Transformations</Filter>
     </ClInclude>
-    <ClInclude Include="include\transformations\TransformationFactory.h">
+    <ClInclude Include="include\transformations\ITransformation.h">
       <Filter>Header Files\Transformations</Filter>
     </ClInclude>
   </ItemGroup>

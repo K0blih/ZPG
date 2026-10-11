@@ -1,7 +1,7 @@
 #include "DrawableObject.h"
 #include "Model.h"
 #include "ShaderProgram.h"
-#include "transformations/Transformation.h"
+#include "transformations/ITransformation.h"
 
 #include <GLFW/glfw3.h>
 #include <utility>
@@ -10,7 +10,7 @@ DrawableObject::DrawableObject(Model& model, ShaderProgram& shaderProgram) : mod
 {
 }
 
-void DrawableObject::setTransformation(std::unique_ptr<Transformation> value)
+void DrawableObject::setTransformation(std::unique_ptr<ITransformation> value)
 {
 	transformation = std::move(value);
 }

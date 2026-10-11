@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Transformation.h"
+#include "ITransformation.h"
 
 #include <glm/vec3.hpp>
 
-class StaticTransformation final : public Transformation {
+class StaticTransformation final : public ITransformation {
 public:
     StaticTransformation() = default;
     explicit StaticTransformation(const glm::mat4& matrix);

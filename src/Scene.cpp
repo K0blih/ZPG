@@ -89,11 +89,11 @@ void Scene::createTriangle()
 	DrawableObject& triangleObject = addObject(triangleMesh, basic);
 
     auto translation = TransformationFactory::makeTranslation(0.5f, 0.0f, 0.0f);
-    auto scale = TransformationFactory::makeScale(0.5f);
+    auto rotation = TransformationFactory::makeRotation(1.0f, 0.0f, 1.0f, 0.0f);
 
     auto transformation = std::make_unique<CompositeTransformation>();
     transformation->add(std::move(translation));
-    transformation->add(std::move(scale));
+    transformation->add(std::move(rotation));
 
     triangleObject.setTransformation(std::move(transformation));
 }

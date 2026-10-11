@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <utility>
 
-void CompositeTransformation::add(std::unique_ptr<Transformation> child)
+void CompositeTransformation::add(std::unique_ptr<ITransformation> child)
 {
 	if (!child)
 	{

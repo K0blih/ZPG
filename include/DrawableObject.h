@@ -4,18 +4,18 @@
 
 class Model;
 class ShaderProgram;
-class Transformation;
+class ITransformation;
 
 class DrawableObject {
 public:
 	DrawableObject(Model& model, ShaderProgram& shaderProgram);
 	~DrawableObject();
 
-	void setTransformation(std::unique_ptr<Transformation> value);
+	void setTransformation(std::unique_ptr<ITransformation> value);
 	void draw(double timeSeconds) const;
 
 private:
 	Model& model;
 	ShaderProgram& shaderProgram;
-	std::unique_ptr<Transformation> transformation;
+	std::unique_ptr<ITransformation> transformation;
 };

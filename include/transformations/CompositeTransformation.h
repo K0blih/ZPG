@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Transformation.h"
+#include "ITransformation.h"
 
 #include <memory>
 #include <vector>
 
-class CompositeTransformation final : public Transformation {
+class CompositeTransformation final : public ITransformation {
 public:
-    void add(std::unique_ptr<Transformation> child);
+    void add(std::unique_ptr<ITransformation> child);
 
     glm::mat4 getMatrix(double timeSeconds) const override;
 
 private:
-    std::vector<std::unique_ptr<Transformation>> children;
+    std::vector<std::unique_ptr<ITransformation>> children;
 };

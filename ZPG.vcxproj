@@ -150,7 +150,6 @@
     <None Include="shaders\blue.frag" />
     <None Include="shaders\red.frag" />
     <None Include="shaders\sun.frag" />
-    <None Include="shaders\transform2D.vert" />
     <None Include="shaders\transform3D.vert" />
   </ItemGroup>
   <ItemGroup>
@@ -163,8 +162,8 @@
     <ClInclude Include="include\ShaderProgram.h" />
     <ClInclude Include="include\transformations\CompositeTransformation.h" />
     <ClInclude Include="include\transformations\DynamicTransformation.h" />
+    <ClInclude Include="include\transformations\ITransformation.h" />
     <ClInclude Include="include\transformations\StaticTransformation.h" />
-    <ClInclude Include="include\transformations\Transformation.h" />
     <ClInclude Include="include\transformations\TransformationFactory.h" />
     <ClInclude Include="include\VertexFormat.h" />
     <ClInclude Include="models\bushes.h" />

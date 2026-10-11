@@ -2,9 +2,9 @@
 
 #include <glm/mat4x4.hpp>
 
-class Transformation {
+class ITransformation {
 public:
-    virtual ~Transformation() = default;
+    virtual ~ITransformation() = default;
 
     virtual glm::mat4 getMatrix(double timeSeconds) const = 0;
 };
