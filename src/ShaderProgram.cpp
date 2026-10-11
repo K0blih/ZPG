@@ -78,6 +78,12 @@ void ShaderProgram::setUniform(const char* name, const glm::vec3& value) const
 	glUniform3f(location, value.x, value.y, value.z);
 }
 
+void ShaderProgram::setUniform(const char* name, const glm::mat4& value) const
+{
+	GLint location = getUniformLocation(name);
+	glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
+}
+
 ShaderProgram::~ShaderProgram()
 {
 	reset();

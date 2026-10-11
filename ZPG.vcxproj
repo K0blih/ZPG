@@ -112,6 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\glm;$(ProjectDir)libs\glad\include;$(ProjectDir)models;$(ProjectDir)include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,13 +161,21 @@
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\ShaderProgram.h" />
-    <ClInclude Include="include\Transformation.h" />
+    <ClInclude Include="include\transformations\CompositeTransformation.h" />
+    <ClInclude Include="include\transformations\DynamicTransformation.h" />
+    <ClInclude Include="include\transformations\StaticTransformation.h" />
+    <ClInclude Include="include\transformations\Transformation.h" />
+    <ClInclude Include="include\transformations\TransformationFactory.h" />
+    <ClInclude Include="include\VertexFormat.h" />
     <ClInclude Include="models\bushes.h" />
     <ClInclude Include="models\CHO0289.h" />
+    <ClInclude Include="models\earth.h" />
     <ClInclude Include="models\gift.h" />
+    <ClInclude Include="models\moon.h" />
     <ClInclude Include="models\openGL.h" />
     <ClInclude Include="models\plain.h" />
     <ClInclude Include="models\sphere.h" />
+    <ClInclude Include="models\sun.h" />
     <ClInclude Include="models\suzi_flat.h" />
     <ClInclude Include="models\suzi_smooth.h" />
     <ClInclude Include="models\tree.h" />
@@ -180,7 +189,10 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
-    <ClCompile Include="src\Transformation.cpp" />
+    <ClCompile Include="src\transformations\CompositeTransformation.cpp" />
+    <ClCompile Include="src\transformations\DynamicTransformation.cpp" />
+    <ClCompile Include="src\transformations\StaticTransformation.cpp" />
+    <ClCompile Include="src\transformations\TransformationFactory.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

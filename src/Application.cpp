@@ -17,7 +17,8 @@ void Application::initialization()
 	registerErrorCallback();
 
 	// Initialize GLFW
-	if (!glfwInit()) {
+	if (!glfwInit())
+	{
 		throw std::runtime_error("GLFW initialization failed");
 	}
 	glfwinitialized = true;
@@ -74,12 +75,13 @@ void Application::createScene()
 	scenes[1].createSphere();
 	scenes[2].createForest();
 	scenes[3].createLogin();
+	scenes[4].createSolarSystem();
 	signature.createSignature();
 }
 
 void Application::switchScene(int index)
 {
-	if (index >= 0 && index < 4)
+	if (index >= 0 && index < 5)
 	{
 		activeScene = index;
 	}
@@ -87,14 +89,18 @@ void Application::switchScene(int index)
 
 void Application::run()
 {
+	const double startTime = glfwGetTime();
+
 	while (!glfwWindowShouldClose(window))
 	{
+		const double timeSeconds = glfwGetTime() - startTime;
+
 		// Clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		// Draw a triangles
-		scenes[activeScene].draw();
-		signature.draw();
+		scenes[activeScene].draw(timeSeconds);
+		signature.draw(timeSeconds);
 
 		// Display the rendered frame and process events
 		glfwSwapBuffers(window);
@@ -110,6 +116,9 @@ Application::~Application()
 		{
 			scene.clear();
 		}
+
+		signature.clear();
+
 		glfwDestroyWindow(window);
 	}
 

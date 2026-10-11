@@ -2,6 +2,7 @@
 
 #include <glad/gl.h>
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 
 class Shader;
 
@@ -19,6 +20,7 @@ public:
 
 	void setUniform(const char* name, float value) const;
 	void setUniform(const char* name, const glm::vec3& value) const;
+	void setUniform(const char* name, const glm::mat4& value) const;
 
 private:
 	GLint getUniformLocation(const char* name) const;

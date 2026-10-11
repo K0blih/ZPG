@@ -33,6 +33,11 @@ namespace {
 		{
 			app->switchScene(3);
 		}
+		if (key == GLFW_KEY_5 && action == GLFW_PRESS)
+		{
+			app->switchScene(4);
+		}
+
 		printf("key_callback [%d,%d,%d,%d] \n", key, scancode, action, mods);
 	}
 

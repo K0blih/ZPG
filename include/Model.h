@@ -1,5 +1,7 @@
 #pragma once
 
+#include "VertexFormat.h"
+
 #include <glad/gl.h>
 #include <cstddef>
 
@@ -11,7 +13,7 @@ public:
 	Model(const Model&) = delete;
 	Model& operator=(const Model&) = delete;
 
-	void create(const float* vertices, std::size_t floatCount, GLenum drawingMode = GL_TRIANGLES);
+	void create(const float* vertices, std::size_t floatCount, VertexFormat format, GLenum drawingMode = GL_TRIANGLES);
 
 	void draw() const;
 	void reset();

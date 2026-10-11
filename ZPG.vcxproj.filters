@@ -15,6 +15,12 @@
     <Filter Include="Models">
       <UniqueIdentifier>{ef82c945-b078-4d6d-b6ba-4becf1d269c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Transformations">
+      <UniqueIdentifier>{4254c9d3-9d54-4e97-85a7-5f35715e5538}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Transformations">
+      <UniqueIdentifier>{c995faa6-3ddf-4b9b-92a4-59286c138246}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -90,8 +96,32 @@
     <ClInclude Include="models\CHO0289.h">
       <Filter>Models</Filter>
     </ClInclude>
-    <ClInclude Include="include\Transformation.h">
+    <ClInclude Include="models\earth.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\moon.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\sun.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VertexFormat.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\transformations\CompositeTransformation.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="include\transformations\DynamicTransformation.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="include\transformations\StaticTransformation.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="include\transformations\Transformation.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="include\transformations\TransformationFactory.h">
+      <Filter>Header Files\Transformations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,8 +149,17 @@
     <ClCompile Include="src\ShaderProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Transformation.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\transformations\CompositeTransformation.cpp">
+      <Filter>Source Files\Transformations</Filter>
+    </ClCompile>
+    <ClCompile Include="src\transformations\DynamicTransformation.cpp">
+      <Filter>Source Files\Transformations</Filter>
+    </ClCompile>
+    <ClCompile Include="src\transformations\StaticTransformation.cpp">
+      <Filter>Source Files\Transformations</Filter>
+    </ClCompile>
+    <ClCompile Include="src\transformations\TransformationFactory.cpp">
+      <Filter>Source Files\Transformations</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

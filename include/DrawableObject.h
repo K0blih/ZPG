@@ -1,22 +1,21 @@
 #pragma once
 
-#include <Transformation.h>
+#include <memory>
 
 class Model;
 class ShaderProgram;
+class Transformation;
 
 class DrawableObject {
 public:
 	DrawableObject(Model& model, ShaderProgram& shaderProgram);
+	~DrawableObject();
 
-	void setTranslation(float x, float y, float z);
-	void setScale(float value);
-	void setRotationAngle(float angle);
-
-	void draw() const;
+	void setTransformation(std::unique_ptr<Transformation> value);
+	void draw(double timeSeconds) const;
 
 private:
 	Model& model;
 	ShaderProgram& shaderProgram;
-	Transformation transformation;
+	std::unique_ptr<Transformation> transformation;
 };

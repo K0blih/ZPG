@@ -16,7 +16,7 @@ public:
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
 
-	Model& addModel(const float* vertices, std::size_t floatCount, GLenum drawingMode = GL_TRIANGLES);
+	Model& addModel(const float* vertices, std::size_t floatCount, VertexFormat format, GLenum drawingMode = GL_TRIANGLES);
 	ShaderProgram& addShaderProgram(const Shader& vertexShader, const Shader& fragmentShader);
 	DrawableObject& addObject(Model& model, ShaderProgram& shaderProgram);
 
@@ -25,15 +25,13 @@ public:
 	void createSphere();
 	void createForest();
 	void createLogin();
-	void draw();
+	void createSolarSystem();
+
+	void draw(double timeSeconds);
 	void clear();
 
 private:
 	std::vector<std::unique_ptr<Model>> models;
 	std::vector<std::unique_ptr<ShaderProgram>> shaderPrograms;
 	std::vector<std::unique_ptr<DrawableObject>> objects;
-
-	// will be removed in the future, just for testing purposes
-	bool spinning = false;
-	float rotationAngle = 0.0f;
 };

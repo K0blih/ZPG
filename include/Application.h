@@ -22,7 +22,7 @@ private:
 	GLFWwindow* window = nullptr;
 	bool glfwinitialized = false;
 	Scene signature;
-	Scene scenes[4];
+	Scene scenes[5];
 	int activeScene = 0;
 
 };

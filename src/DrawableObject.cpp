@@ -1,33 +1,30 @@
 #include "DrawableObject.h"
 #include "Model.h"
 #include "ShaderProgram.h"
+#include "transformations/Transformation.h"
 
 #include <GLFW/glfw3.h>
+#include <utility>
 
 DrawableObject::DrawableObject(Model& model, ShaderProgram& shaderProgram) : model(model), shaderProgram(shaderProgram)
 {
 }
 
-void DrawableObject::setTranslation(float x, float y, float z)
+void DrawableObject::setTransformation(std::unique_ptr<Transformation> value)
 {
-	transformation.setTranslation(x, y, z);
+	transformation = std::move(value);
 }
-
-void DrawableObject::setScale(float value)
+	
+void DrawableObject::draw(double timeSeconds) const
 {
-	transformation.setScale(value);
-}
+	const glm::mat4 modelMatrix = transformation ? transformation->getMatrix(timeSeconds) : glm::mat4(1.0f);
 
-void DrawableObject::setRotationAngle(float angle)
-{
-	transformation.setRotationAngle(angle);
-}
-
-void DrawableObject::draw() const
-{
 	shaderProgram.use();
-	transformation.applyTo(shaderProgram);
+	shaderProgram.setUniform("modelMatrix", modelMatrix);
+
 	model.draw();
 
 	glUseProgram(0);
 }
+
+DrawableObject::~DrawableObject() = default;
