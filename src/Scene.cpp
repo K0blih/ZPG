@@ -16,6 +16,23 @@
 #include <sun.h>
 #include <earth.h>
 #include <moon.h>
+#include <clock.h>
+#include <plain.h>
+
+void Scene::rotateCamera(float deltaX, float deltaY)
+{
+    camera.rotate(deltaX, deltaY);
+}
+
+void Scene::resizeCamera(int width, int height)
+{
+	camera.resize(width, height);
+}
+
+void Scene::moveCamera(float forwardInput, float rightInput, float deltaTime)
+{
+	camera.move(forwardInput, rightInput, deltaTime);
+}
 
 Model& Scene::addModel(const float* vertices, std::size_t floatCount, VertexFormat format, GLenum drawingMode)
 {
@@ -26,13 +43,21 @@ Model& Scene::addModel(const float* vertices, std::size_t floatCount, VertexForm
     return *models.back();
 }
 
-ShaderProgram& Scene::addShaderProgram(const Shader& vertexShader, const Shader& fragmentShader)
+ShaderProgram& Scene::addShaderProgram(const Shader& vertexShader, const Shader& fragmentShader, bool useCamera)
 {
     auto program = std::make_unique<ShaderProgram>();
     program->link(vertexShader, fragmentShader);
 
     shaderPrograms.push_back(std::move(program));
-    return *shaderPrograms.back();
+
+    ShaderProgram& result = *shaderPrograms.back();
+
+	if (useCamera)
+	{
+        camera.subscribe(result);
+	}
+
+    return result;
 }
 
 DrawableObject& Scene::addObject(Model& model, ShaderProgram& shaderProgram)
@@ -50,7 +75,7 @@ void Scene::createSignature()
     Shader fragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
 
     // Create and link the shader program 
-    ShaderProgram& program = addShaderProgram(vertex, fragment);
+    ShaderProgram& program = addShaderProgram(vertex, fragment, false);
 
     Model& loginMesh = addModel(cho0289, std::size(cho0289), VertexFormat::PositionNormal);
 
@@ -98,24 +123,24 @@ void Scene::createTriangle()
     triangleObject.setTransformation(std::move(transformation));
 }
 
-void Scene::createSphere()
+void Scene::createClock()
 {
     clear();
 
-	// Create and compile the vertex and fragment shaders
-	Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
-	Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
+    // Create and compile the vertex and fragment shaders
+    Shader vertex(GL_VERTEX_SHADER, "shaders/clock.vert");
+    Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/clock.frag");
 
-	// Create and link the shader program 
-	ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
+    // Create and link the shader program 
+    ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
 
-	Model& sphereMesh = addModel(sphere, std::size(sphere), VertexFormat::PositionNormal);
+    Model& clockMesh = addModel(clockModel, std::size(clockModel), VertexFormat::PositionNormalColor);
 
-	DrawableObject& sphereObject = addObject(sphereMesh, basic);
+    DrawableObject& clockObject = addObject(clockMesh, basic);
 
-	auto rotation = TransformationFactory::makeDynamicRotation(0.5f, 0.0f, 1.0f, 0.0f);
+    auto scale = TransformationFactory::makeScale(1.0f, 1.0f, -1.0f);
 
-    sphereObject.setTransformation(std::move(rotation));
+    clockObject.setTransformation(std::move(scale));
 }
 
 void Scene::createForest()
@@ -123,70 +148,105 @@ void Scene::createForest()
     clear();
 
     // Create and compile the vertex and fragment shaders
-    Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
-    Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
+    Shader treeVertex(GL_VERTEX_SHADER, "shaders/forest.vert");
+    Shader bushVertex(GL_VERTEX_SHADER, "shaders/bush.vert");
+    Shader groundVertex(GL_VERTEX_SHADER, "shaders/ground.vert");
+    Shader forestFragment(GL_FRAGMENT_SHADER, "shaders/forest.frag");
+
+    Shader clockVertex(GL_VERTEX_SHADER, "shaders/clock.vert");
+    Shader clockFragment(GL_FRAGMENT_SHADER, "shaders/clock.frag");
+
+    Shader basicVertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
     Shader sunFragment(GL_FRAGMENT_SHADER, "shaders/sun.frag");
 
     // Create and link the shader program 
-    ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
-    ShaderProgram& sunProgram = addShaderProgram(vertex, sunFragment);
+    ShaderProgram& treeProgram = addShaderProgram(treeVertex, forestFragment);
+    ShaderProgram& bushProgram = addShaderProgram(bushVertex, forestFragment);
+    ShaderProgram& groundProgram = addShaderProgram(groundVertex, forestFragment);
+    ShaderProgram& clockProgram = addShaderProgram(clockVertex, clockFragment);
+    ShaderProgram& sunProgram = addShaderProgram(basicVertex, sunFragment);
 
     Model& treeMesh = addModel(tree, std::size(tree), VertexFormat::PositionNormal);
     Model& bushMesh = addModel(bushes, std::size(bushes), VertexFormat::PositionNormal);
+	Model& groundMesh = addModel(plain, std::size(plain), VertexFormat::PositionNormal);
+	Model& clockMesh = addModel(clockModel, std::size(clockModel), VertexFormat::PositionNormalColor);
     Model& sphereMesh = addModel(sphere, std::size(sphere), VertexFormat::PositionNormal);
 
+    DrawableObject& ground = addObject(groundMesh, groundProgram);
+
+    auto groundTransformation = std::make_unique<CompositeTransformation>();
+    groundTransformation->add(TransformationFactory::makeTranslation(0.0f, -0.9f, -5.0f));
+    groundTransformation->add(TransformationFactory::makeScale(6.0f, 1.0f, 7.0f));
+
+    ground.setTransformation(std::move(groundTransformation));
+
     std::mt19937 generator(std::random_device{}());
-    std::uniform_real_distribution<float> randomX(-0.7f, 0.7f);
-    std::uniform_real_distribution<float> randomTreeY(-0.8f, -0.2f);
-    std::uniform_real_distribution<float> randomBushY(-0.88f, -0.55f);
-    std::uniform_real_distribution<float> randomAngle(0.0f, 6.0f);
-    std::uniform_real_distribution<float> randomTreeScale(0.05f, 0.08f);
-    std::uniform_real_distribution<float> randomBushScale(0.25f, 0.45f);
+    std::uniform_real_distribution<float> jitter(-0.20f, 0.20f);
+    std::uniform_real_distribution<float> randomAngle(0.0f, 6.2831853f);
+    std::uniform_real_distribution<float> randomTreeScale(0.18f, 0.28f);
+    std::uniform_real_distribution<float> randomBushScale(0.7f, 1.3f);
+    std::uniform_real_distribution<float> randomBushX(-4.8f, 4.8f);
+    std::uniform_real_distribution<float> randomBushZ(-10.0f, -0.8f);
 
-    // 11 trees with random positions, rotations and scales.
-    for (int i = 0; i < 11; i++)
+    // 80 trees with random positions, rotations and scales.
+    for (int i = 0; i < 80; i++)
     {
-        DrawableObject& treeObject = addObject(treeMesh, basic);
+        DrawableObject& treeObject = addObject(treeMesh, treeProgram);
 
-        float x = randomX(generator);
-        float y = randomTreeY(generator);
-
-        auto translation = TransformationFactory::makeTranslation(x, y, y + 0.5f);
-        auto rotation = TransformationFactory::makeRotation(randomAngle(generator), 0.0f, 1.0f, 0.0f);
-        auto scale = TransformationFactory::makeScale(randomTreeScale(generator));
+        const float x = -4.5f + (i % 10) + jitter(generator);
+        const float z = -1.0f - (i / 10) * 1.25f + jitter(generator);
 
         auto transformation = std::make_unique<CompositeTransformation>();
-        transformation->add(std::move(translation));
-        transformation->add(std::move(rotation));
-        transformation->add(std::move(scale));
+
+        transformation->add(TransformationFactory::makeTranslation(x, -0.9f, z));
+        transformation->add(TransformationFactory::makeRotation(randomAngle(generator), 0.0f, 1.0f, 0.0f));
+        transformation->add(TransformationFactory::makeScale(randomTreeScale(generator)));
 
         treeObject.setTransformation(std::move(transformation));
     }
 
-    // 11 bushes with random positions, rotations and scales.
-    for (int i = 0; i < 11; i++)
+    // 24 bushes spread across the ground.
+    for (int i = 0; i < 24; i++)
     {
-        DrawableObject& bushObject = addObject(bushMesh, basic);
+        DrawableObject& bushObject = addObject(bushMesh, bushProgram);
 
-        float x = randomX(generator);
-        float y = randomBushY(generator);
-
-        auto translation = TransformationFactory::makeTranslation(x, y, y + 0.5f);
-        auto rotation = TransformationFactory::makeRotation(randomAngle(generator), 0.0f, 1.0f, 0.0f);
-        auto scale = TransformationFactory::makeScale(randomBushScale(generator));
+        const float x = randomBushX(generator);
+        const float z = randomBushZ(generator);
+        const float scale = randomBushScale(generator);
 
         auto transformation = std::make_unique<CompositeTransformation>();
-        transformation->add(std::move(translation));
-        transformation->add(std::move(rotation));
-        transformation->add(std::move(scale));
+
+        transformation->add(TransformationFactory::makeTranslation(x, -0.9f, z));
+        transformation->add(TransformationFactory::makeRotation(randomAngle(generator), 0.0f, 1.0f, 0.0f));
+        transformation->add(TransformationFactory::makeScale(scale));
 
         bushObject.setTransformation(std::move(transformation));
     }
 
+    // 2 clocks
+    for (int i = 0; i < 2; i++)
+    {
+        DrawableObject& clockObject = addObject(clockMesh, clockProgram);
+
+        const float x = (i == 0) ? 0.0f : 2.0f;
+        const float z = (i == 0) ? -3.0f : -7.9f;
+        const float angle = (i == 0) ? 0.20f : -0.35f;
+        const float scale = (i == 0) ? 0.18f : 0.22f;
+
+        auto transformation = std::make_unique<CompositeTransformation>();
+
+        transformation->add(TransformationFactory::makeTranslation(x, -0.9f + scale, z));
+        transformation->add(TransformationFactory::makeRotation(angle, 0.0f, 1.0f, 0.0f));
+        transformation->add(TransformationFactory::makeScale(scale, scale, -scale));
+
+        clockObject.setTransformation(std::move(transformation));
+    }
+
     DrawableObject& sun = addObject(sphereMesh, sunProgram);
 
-    auto translation = TransformationFactory::makeTranslation(0.72f, 0.75f, 0.65f);
-    auto scale = TransformationFactory::makeScale(0.13f);
+    // Place a larger sun above and beyond the forest.
+    auto translation = TransformationFactory::makeTranslation(8.0f, 9.0f, -30.0f);
+    auto scale = TransformationFactory::makeScale(3.5f);
 
     auto transformation = std::make_unique<CompositeTransformation>();
     transformation->add(std::move(translation));
@@ -246,7 +306,7 @@ void Scene::createSolarSystem()
     const float earthOrbitRadius = 0.55f;
 
     // Earth orbits the Sun in the XY plane and rotates around its own axis.
-    auto earthOrbit = TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 0.0f, 1.0f);
+    auto earthOrbit = TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 1.0f, 0.0f);
     auto earthTranslation = TransformationFactory::makeTranslation(earthOrbitRadius, 0.0f, 0.0f);
     auto earthRotation = TransformationFactory::makeDynamicRotation(1.2f, 0.0f, 1.0f, 0.0f);
     auto earthScale = TransformationFactory::makeScale(0.1f);
@@ -260,9 +320,9 @@ void Scene::createSolarSystem()
     earthObject.setTransformation(std::move(earthTransformation));
 
     // Moon follows Earth's orbit, then adds its own orbit around Earth.
-    auto moonEarthOrbit = TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 0.0f, 1.0f);
+    auto moonEarthOrbit = TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 1.0f, 0.0f);
     auto moonEarthTranslation = TransformationFactory::makeTranslation(earthOrbitRadius, 0.0f, 0.0f);
-    auto moonOrbit = TransformationFactory::makeDynamicRotation(1.4f, 0.0f, 0.0f, 1.0f);
+    auto moonOrbit = TransformationFactory::makeDynamicRotation(-1.4f, 0.0f, 1.0f, 0.0f);
     auto moonTranslation = TransformationFactory::makeTranslation(0.18f, 0.0f, 0.0f);
     auto moonScale = TransformationFactory::makeScale(0.035f);
 
@@ -286,6 +346,10 @@ void Scene::draw(double timeSeconds)
 
 void Scene::clear()
 {
+    for (const auto& program : shaderPrograms) {
+        camera.unsubscribe(*program);
+    }
+
     objects.clear();
     models.clear();
     shaderPrograms.clear();

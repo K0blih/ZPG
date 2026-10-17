@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "ShaderProgram.h"
 #include "DrawableObject.h"
+#include "Camera.h"
 
 #include <cstddef>
 #include <memory>
@@ -16,13 +17,17 @@ public:
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
 
+	void rotateCamera(float deltaX, float deltaY);
+	void resizeCamera(int width, int height);
+	void moveCamera(float forwardInput, float rightInput, float deltaTime);
+
 	Model& addModel(const float* vertices, std::size_t floatCount, VertexFormat format, GLenum drawingMode = GL_TRIANGLES);
-	ShaderProgram& addShaderProgram(const Shader& vertexShader, const Shader& fragmentShader);
+	ShaderProgram& addShaderProgram(const Shader& vertexShader, const Shader& fragmentShader, bool useCamera = true);
 	DrawableObject& addObject(Model& model, ShaderProgram& shaderProgram);
 
 	void createSignature();
 	void createTriangle();
-	void createSphere();
+	void createClock();
 	void createForest();
 	void createLogin();
 	void createSolarSystem();
@@ -31,6 +36,8 @@ public:
 	void clear();
 
 private:
+	Camera camera;
+
 	std::vector<std::unique_ptr<Model>> models;
 	std::vector<std::unique_ptr<ShaderProgram>> shaderPrograms;
 	std::vector<std::unique_ptr<DrawableObject>> objects;

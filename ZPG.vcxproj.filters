@@ -31,16 +31,28 @@
     <None Include="shaders\basic.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\blue.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\red.frag">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="shaders\transform3D.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\sun.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\clock.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\clock.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\forest.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\forest.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\bush.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\ground.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
@@ -120,6 +132,15 @@
     <ClInclude Include="include\transformations\ITransformation.h">
       <Filter>Header Files\Transformations</Filter>
     </ClInclude>
+    <ClInclude Include="include\ICameraObserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="models\clock.h">
+      <Filter>Models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -157,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="src\transformations\TransformationFactory.cpp">
       <Filter>Source Files\Transformations</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

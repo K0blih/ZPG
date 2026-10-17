@@ -5,20 +5,25 @@
 void Model::create(const float* vertices, std::size_t floatCount, VertexFormat format, GLenum drawingMode)
 {
 	GLsizei floatsPerVertex = 0;
+	GLsizei colorOffset = 3;
 
 	switch (format)
 	{
-		case VertexFormat::PositionNormal:
-			floatsPerVertex = 6;
-			break;
-		case VertexFormat::PositionColor:
-			floatsPerVertex = 6;
-			break;
-		case VertexFormat::PositionColorNormal:
-			floatsPerVertex = 9;
-			break;
-		default:
-			throw std::invalid_argument("Unsupported vertex format");
+	case VertexFormat::PositionNormal:
+		floatsPerVertex = 6;
+		break;
+	case VertexFormat::PositionColor:
+		floatsPerVertex = 6;
+		break;
+	case VertexFormat::PositionColorNormal:
+		floatsPerVertex = 9;
+		break;
+	case VertexFormat::PositionNormalColor:
+		floatsPerVertex = 9;
+		colorOffset = 6;
+		break;
+	default:
+		throw std::invalid_argument("Unsupported vertex format");
 	}
 
 	if (!vertices || floatCount == 0 || floatCount % floatsPerVertex != 0)
@@ -50,7 +55,7 @@ void Model::create(const float* vertices, std::size_t floatCount, VertexFormat f
 
 	// index, number of components, data type, normalized, vertex stride, offset
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, floatsPerVertex * sizeof(float), (GLvoid*)0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, floatsPerVertex * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, floatsPerVertex * sizeof(float), (GLvoid*)(colorOffset * sizeof(float)));
 
 	vertexCount = static_cast<GLsizei>(floatCount / floatsPerVertex);
 	this->drawingMode = drawingMode;

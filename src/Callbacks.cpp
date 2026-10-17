@@ -11,54 +11,102 @@ namespace {
 
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		{
-			glfwSetWindowShouldClose(window, GL_TRUE);
-		}
-
 		Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
-		if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+		if (!app)
 		{
-			app->switchScene(0);
+			return;
 		}
-		if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+		app->handleKey(key, action);
+
+		if (action != GLFW_PRESS)
 		{
-			app->switchScene(1);
-		}
-		if (key == GLFW_KEY_3 && action == GLFW_PRESS)
-		{
-			app->switchScene(2);
-		}
-		if (key == GLFW_KEY_4 && action == GLFW_PRESS)
-		{
-			app->switchScene(3);
-		}
-		if (key == GLFW_KEY_5 && action == GLFW_PRESS)
-		{
-			app->switchScene(4);
+			return;
 		}
 
-		printf("key_callback [%d,%d,%d,%d] \n", key, scancode, action, mods);
+		switch (key)
+		{
+		case GLFW_KEY_ESCAPE:
+			glfwSetWindowShouldClose(window, GLFW_TRUE);
+			break;
+		case GLFW_KEY_1:
+			app->switchScene(0);
+			break;
+		case GLFW_KEY_2:
+			app->switchScene(1);
+			break;
+		case GLFW_KEY_3:
+			app->switchScene(2);
+			break;
+		case GLFW_KEY_4:
+			app->switchScene(3);
+			break;
+		case GLFW_KEY_5:
+			app->switchScene(4);
+			break;
+		}
+
+		//printf("key_callback [%d,%d,%d,%d] \n", key, scancode, action, mods);
 	}
 
-	void window_focus_callback(GLFWwindow* window, int focused) { printf("window_focus_callback \n"); }
+	void window_focus_callback(GLFWwindow* window, int focused)
+	{
+		Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+		if (!app)
+		{
+			return;
+		}
+		if (!focused)
+		{
+			app->resetHeldKeys();
+			app->setMouseLookActive(false);
+		}
+		app->resetMouseTracking();
+			
+		printf("window_focus_callback \n");
+	}
 
 	void window_iconify_callback(GLFWwindow* window, int iconified) { printf("window_iconify_callback \n"); }
 
-	void window_size_callback(GLFWwindow* window, int width, int height)
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	{
+		Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+		if (!app)
+		{
+			return;
+		}
+		app->resizeFramebuffer(width, height);
+
 		printf("resize %d, %d \n", width, height);
-		glViewport(0, 0, width, height);
 	}
 
-	void cursor_callback(GLFWwindow* window, double x, double y) { printf("cursor_callback \n"); }
+	void cursor_callback(GLFWwindow* window, double x, double y)
+	{
+		Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+		if (!app)
+		{
+			return;
+		}
+		app->handleMouseMove(x, y);
+
+		//printf("cursor_callback \n");
+	}
 
 	void button_callback(GLFWwindow* window, int button, int action, int mode)
 	{
-		if (action == GLFW_PRESS)
+		if (button == GLFW_MOUSE_BUTTON_RIGHT)
 		{
-			printf("button_callback [%d,%d,%d]\n", button, action, mode);
+			Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+			if (!app)
+			{
+				return;
+			}
+			app->setMouseLookActive(action == GLFW_PRESS);
 		}
+
+		//if (action == GLFW_PRESS)
+		//{
+		//	printf("button_callback [%d,%d,%d]\n", button, action, mode);
+		//}
 	}
 } //namespace
 
@@ -75,5 +123,5 @@ void registerWindowCallbacks(GLFWwindow* window)
 	glfwSetMouseButtonCallback(window, button_callback);
 	glfwSetWindowFocusCallback(window, window_focus_callback);
 	glfwSetWindowIconifyCallback(window, window_iconify_callback);
-	glfwSetWindowSizeCallback(window, window_size_callback);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 }

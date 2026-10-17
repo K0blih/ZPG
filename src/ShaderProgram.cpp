@@ -1,8 +1,11 @@
 #include "ShaderProgram.h"
 #include "Shader.h"
 
+#include <GLFW/glfw3.h>
+
 #include <stdexcept>
 #include <string>
+#include <ctime>
 
 void ShaderProgram::link(const Shader& vertex, const Shader& fragment)
 {
@@ -38,6 +41,23 @@ void ShaderProgram::link(const Shader& vertex, const Shader& fragment)
 void ShaderProgram::use() const
 {
 	glUseProgram(shaderProgramId);
+
+	setUniform("viewMatrix", cameraView);
+	setUniform("projectionMatrix", cameraProjection);
+
+	GLint location = glGetUniformLocation(shaderProgramId, "time");
+	if (location != -1)
+	{
+		const std::time_t now = std::time(nullptr);
+		std::tm local{};
+
+		if (localtime_s(&local, &now) == 0)
+		{
+			const float seconds = static_cast<float>((local.tm_hour % 12) * 3600 + local.tm_min * 60 + local.tm_sec);
+
+			glUniform1f(location, seconds);
+		}
+	}
 }
 
 void ShaderProgram::reset()
@@ -82,6 +102,12 @@ void ShaderProgram::setUniform(const char* name, const glm::mat4& value) const
 {
 	GLint location = getUniformLocation(name);
 	glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
+}
+
+void ShaderProgram::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+{
+	cameraView = viewMatrix;
+	cameraProjection = projectionMatrix;
 }
 
 ShaderProgram::~ShaderProgram()

@@ -12,6 +12,90 @@
 #include <stdio.h>
 #include <stdexcept>
 
+void Application::resizeFramebuffer(int width, int height)
+{
+	glViewport(0, 0, width, height);
+
+	for (Scene& scene : scenes)
+	{
+		scene.resizeCamera(width, height);
+	}
+}
+
+void Application::handleMouseMove(double x, double y)
+{
+	if (!mouseLookActive)
+	{
+		return;
+	}
+
+	if (firstMouse)
+	{
+		lastMouseX = x;
+		lastMouseY = y;
+		firstMouse = false;
+		return;
+	}
+
+	const float deltaX = static_cast<float>(x - lastMouseX);
+	const float deltaY = static_cast<float>(y - lastMouseY);
+
+	lastMouseX = x;
+	lastMouseY = y;
+
+	scenes[activeScene].rotateCamera(deltaX, deltaY);
+}
+
+void Application::setMouseLookActive(bool active)
+{
+	if (mouseLookActive == active)
+	{
+		return;
+	}
+
+	mouseLookActive = active;
+	resetMouseTracking();
+
+	glfwSetInputMode(window, GLFW_CURSOR, active ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
+void Application::resetMouseTracking()
+{
+	firstMouse = true;
+}
+
+void Application::handleKey(int key, int action)
+{
+	if (key < 0 || key > GLFW_KEY_LAST)
+	{
+		return;
+	}
+
+	if (action == GLFW_PRESS)
+	{
+		heldKeys[key] = true;
+	}
+	else if (action == GLFW_RELEASE)
+	{
+		heldKeys[key] = false;
+	}
+}
+
+bool Application::isKeyHeld(int key) const
+{
+	if (key < 0 || key > GLFW_KEY_LAST)
+	{
+		return false;
+	}
+
+	return heldKeys[key];
+}
+
+void Application::resetHeldKeys()
+{
+	heldKeys.fill(false);
+}
+
 void Application::initialization()
 {
 	registerErrorCallback();
@@ -65,14 +149,14 @@ void Application::initialization()
 
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
-	glViewport(0, 0, width, height);
+	resizeFramebuffer(width, height);
 }
 
 void Application::createScene()
 {
 	// Create the scenes
 	scenes[0].createTriangle();
-	scenes[1].createSphere();
+	scenes[1].createClock();
 	scenes[2].createForest();
 	scenes[3].createLogin();
 	scenes[4].createSolarSystem();
@@ -84,26 +168,59 @@ void Application::switchScene(int index)
 	if (index >= 0 && index < 5)
 	{
 		activeScene = index;
+		resetMouseTracking();
 	}
 }
 
 void Application::run()
 {
 	const double startTime = glfwGetTime();
+	double previousTime = startTime;
 
 	while (!glfwWindowShouldClose(window))
 	{
-		const double timeSeconds = glfwGetTime() - startTime;
+		const double currentTime = glfwGetTime();
+		float deltaTime = static_cast<float>(currentTime - previousTime);
+		previousTime = currentTime;
+
+		if (deltaTime > 0.1f)
+        {
+            deltaTime = 0.1f;
+        }
+
+		float forwardInput = 0.0f;
+		float rightInput = 0.0f;
+
+		if (isKeyHeld(GLFW_KEY_W))
+		{
+			forwardInput += 1.0f;
+		}
+		if (isKeyHeld(GLFW_KEY_S))
+		{
+			forwardInput -= 1.0f;
+		}
+		if (isKeyHeld(GLFW_KEY_D))
+		{
+			rightInput += 1.0f;
+		}
+		if (isKeyHeld(GLFW_KEY_A))
+		{
+			rightInput -= 1.0f;
+		}
+
+		scenes[activeScene].moveCamera(forwardInput, rightInput, deltaTime);
+
+		const double timeSeconds = currentTime - startTime;
 
 		// Clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
 		// Draw a triangles
 		scenes[activeScene].draw(timeSeconds);
 		signature.draw(timeSeconds);
 
-		// Display the rendered frame and process events
+		// Display the rendered frame
 		glfwSwapBuffers(window);
+		// Process events
 		glfwPollEvents();
 	}
 }

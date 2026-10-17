@@ -147,15 +147,21 @@
     <None Include="README.md" />
     <None Include="shaders\basic.frag" />
     <None Include="shaders\basic.vert" />
-    <None Include="shaders\blue.frag" />
-    <None Include="shaders\red.frag" />
+    <None Include="shaders\bush.vert" />
+    <None Include="shaders\clock.frag" />
+    <None Include="shaders\clock.vert" />
+    <None Include="shaders\forest.frag" />
+    <None Include="shaders\forest.vert" />
+    <None Include="shaders\ground.vert" />
     <None Include="shaders\sun.frag" />
     <None Include="shaders\transform3D.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Application.h" />
     <ClInclude Include="include\Callbacks.h" />
+    <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\DrawableObject.h" />
+    <ClInclude Include="include\ICameraObserver.h" />
     <ClInclude Include="include\Model.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\Shader.h" />
@@ -168,6 +174,7 @@
     <ClInclude Include="include\VertexFormat.h" />
     <ClInclude Include="models\bushes.h" />
     <ClInclude Include="models\CHO0289.h" />
+    <ClInclude Include="models\clock.h" />
     <ClInclude Include="models\earth.h" />
     <ClInclude Include="models\gift.h" />
     <ClInclude Include="models\moon.h" />
@@ -182,6 +189,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Callbacks.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\DrawableObject.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model.cpp" />
