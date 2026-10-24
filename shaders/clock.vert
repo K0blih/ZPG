@@ -10,7 +10,7 @@ uniform float time;
 
 out vec3 vertexColor;
 
-void main()
+void main(void)
 {
     vec3 pos = position;
     vertexColor = color;
@@ -49,7 +49,7 @@ void main()
     {
         float angle = 6.2831853 * mod(time, period) / period;
 
-        float c = cos(angle);   
+        float c = cos(angle);
         float s = sin(angle);
 
         // Clockwise rotation around the model's origin.

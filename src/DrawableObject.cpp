@@ -18,13 +18,9 @@ void DrawableObject::setTransformation(std::unique_ptr<ITransformation> value)
 void DrawableObject::draw(double timeSeconds) const
 {
 	const glm::mat4 modelMatrix = transformation ? transformation->getMatrix(timeSeconds) : glm::mat4(1.0f);
-
-	shaderProgram.use();
 	shaderProgram.setUniform("modelMatrix", modelMatrix);
 
 	model.draw();
-
-	glUseProgram(0);
 }
 
 DrawableObject::~DrawableObject() = default;

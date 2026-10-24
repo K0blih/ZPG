@@ -16,6 +16,8 @@ public:
     void unsubscribe(ICameraObserver& observer);
 
     void setAngles(float alphaDegrees, float fiDegrees);
+    void setPosition(const glm::vec3& position);
+    void setFieldOfView(float degrees);
 
     void rotate(float deltaX, float deltaY);
     void resize(int width, int height);
@@ -33,6 +35,7 @@ private:
     float fi = 270.0f;
 
     float fieldOfView = 60.0f;
+    float aspectRatio = 4.0f / 3.0f;
     float mouseSensitivity = 0.15f;
 	float movementSpeed = 3.0f;
 

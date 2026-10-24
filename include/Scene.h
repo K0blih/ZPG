@@ -26,11 +26,11 @@ public:
 	DrawableObject& addObject(Model& model, ShaderProgram& shaderProgram);
 
 	void createSignature();
-	void createTriangle();
 	void createClock();
 	void createForest();
-	void createLogin();
 	void createSolarSystem();
+	void createLightingTest();
+	void createLitSolarSystem();
 
 	void draw(double timeSeconds);
 	void clear();

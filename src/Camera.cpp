@@ -20,7 +20,7 @@ void Camera::subscribe(ICameraObserver& observer)
     }
 
     // Send the current matrices immediately.
-    observer.onCameraChanged(viewMatrix, projectionMatrix);
+    observer.onCameraChanged(viewMatrix, projectionMatrix, eye);
 }
 
 void Camera::unsubscribe(ICameraObserver& observer)
@@ -44,6 +44,22 @@ void Camera::setAngles(float alphaDegrees, float fiDegrees)
     notify();
 }
 
+void Camera::setPosition(const glm::vec3& position)
+{
+	eye = position;
+	updateView();
+	notify();
+}
+
+void Camera::setFieldOfView(float degrees)
+{
+    fieldOfView = std::clamp(degrees, 1.0f, 179.0f);
+
+    projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f);
+
+	notify();
+}
+
 void Camera::rotate(float deltaX, float deltaY)
 {
     setAngles(alpha + deltaY * mouseSensitivity, fi + deltaX * mouseSensitivity);
@@ -55,11 +71,9 @@ void Camera::resize(int width, int height)
         return;
     }
 
-    const float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
-    projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f);
-
-    notify();
+    setFieldOfView(fieldOfView);
 }
 
 void Camera::move(float forwardInput, float rightInput, float deltaTime)
@@ -97,6 +111,6 @@ void Camera::updateView()
 void Camera::notify()
 {
     for (ICameraObserver* observer : observers) {
-        observer->onCameraChanged(viewMatrix, projectionMatrix);
+        observer->onCameraChanged(viewMatrix, projectionMatrix, eye);
     }
 }

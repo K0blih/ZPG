@@ -147,12 +147,17 @@
     <None Include="README.md" />
     <None Include="shaders\basic.frag" />
     <None Include="shaders\basic.vert" />
+    <None Include="shaders\blinn.frag" />
     <None Include="shaders\bush.vert" />
     <None Include="shaders\clock.frag" />
     <None Include="shaders\clock.vert" />
+    <None Include="shaders\constant.frag" />
     <None Include="shaders\forest.frag" />
     <None Include="shaders\forest.vert" />
     <None Include="shaders\ground.vert" />
+    <None Include="shaders\lambert.frag" />
+    <None Include="shaders\lighting.vert" />
+    <None Include="shaders\phong.frag" />
     <None Include="shaders\sun.frag" />
     <None Include="shaders\transform3D.vert" />
   </ItemGroup>
@@ -180,6 +185,7 @@
     <ClInclude Include="models\moon.h" />
     <ClInclude Include="models\openGL.h" />
     <ClInclude Include="models\plain.h" />
+    <ClInclude Include="models\rocket.h" />
     <ClInclude Include="models\sphere.h" />
     <ClInclude Include="models\sun.h" />
     <ClInclude Include="models\suzi_flat.h" />

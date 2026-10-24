@@ -55,8 +55,6 @@ void Application::setMouseLookActive(bool active)
 
 	mouseLookActive = active;
 	resetMouseTracking();
-
-	glfwSetInputMode(window, GLFW_CURSOR, active ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 
 void Application::resetMouseTracking()
@@ -155,11 +153,12 @@ void Application::initialization()
 void Application::createScene()
 {
 	// Create the scenes
-	scenes[0].createTriangle();
-	scenes[1].createClock();
+	scenes[0].createClock();
+	scenes[1].createLightingTest();
 	scenes[2].createForest();
-	scenes[3].createLogin();
-	scenes[4].createSolarSystem();
+	scenes[3].createSolarSystem();
+	scenes[4].createLitSolarSystem();
+
 	signature.createSignature();
 }
 

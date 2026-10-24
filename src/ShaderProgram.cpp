@@ -41,12 +41,17 @@ void ShaderProgram::link(const Shader& vertex, const Shader& fragment)
 void ShaderProgram::use() const
 {
 	glUseProgram(shaderProgramId);
+}
 
-	setUniform("viewMatrix", cameraView);
-	setUniform("projectionMatrix", cameraProjection);
+void ShaderProgram::unuse()
+{
+	glUseProgram(0);
+}
 
-	GLint location = glGetUniformLocation(shaderProgramId, "time");
-	if (location != -1)
+void ShaderProgram::updateTimeUniform() const
+{
+	GLint timeLocation = findUniformLocation("time");
+	if (timeLocation != -1)
 	{
 		const std::time_t now = std::time(nullptr);
 		std::tm local{};
@@ -55,7 +60,7 @@ void ShaderProgram::use() const
 		{
 			const float seconds = static_cast<float>((local.tm_hour % 12) * 3600 + local.tm_min * 60 + local.tm_sec);
 
-			glUniform1f(location, seconds);
+			setUniform("time", seconds);
 		}
 	}
 }
@@ -69,14 +74,19 @@ void ShaderProgram::reset()
 	}
 }
 
-GLint ShaderProgram::getUniformLocation(const char* name) const
+GLint ShaderProgram::findUniformLocation(const char* name) const
 {
 	if (shaderProgramId == 0)
 	{
 		throw std::runtime_error("Shader program is not linked");
 	}
 
-	GLint location = glGetUniformLocation(shaderProgramId, name);
+	return glGetUniformLocation(shaderProgramId, name);
+}
+
+GLint ShaderProgram::getUniformLocation(const char* name) const
+{
+	const GLint location = findUniformLocation(name);
 
 	if (location == -1)
 	{
@@ -89,25 +99,38 @@ GLint ShaderProgram::getUniformLocation(const char* name) const
 void ShaderProgram::setUniform(const char* name, float value) const
 {
 	GLint location = getUniformLocation(name);
+	use();
 	glUniform1f(location, value);
 }
 
 void ShaderProgram::setUniform(const char* name, const glm::vec3& value) const
 {
 	GLint location = getUniformLocation(name);
+	use();
 	glUniform3f(location, value.x, value.y, value.z);
 }
 
 void ShaderProgram::setUniform(const char* name, const glm::mat4& value) const
 {
 	GLint location = getUniformLocation(name);
+	use();
 	glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
 }
 
-void ShaderProgram::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+void ShaderProgram::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& position)
 {
 	cameraView = viewMatrix;
 	cameraProjection = projectionMatrix;
+	cameraPosition = position;
+
+	setUniform("viewMatrix", cameraView);
+	setUniform("projectionMatrix", cameraProjection);
+
+	GLint cameraPosLocation = findUniformLocation("cameraPosition");
+	if (cameraPosLocation != -1)
+	{
+		setUniform("cameraPosition", cameraPosition);
+	}
 }
 
 ShaderProgram::~ShaderProgram()

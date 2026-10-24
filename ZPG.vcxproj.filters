@@ -55,6 +55,21 @@
     <None Include="shaders\ground.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\lighting.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\lambert.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\phong.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\blinn.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\constant.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Application.h">
@@ -139,6 +154,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="models\clock.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\rocket.h">
       <Filter>Models</Filter>
     </ClInclude>
   </ItemGroup>

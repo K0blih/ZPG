@@ -5,7 +5,7 @@ in vec3 worldNormal;
 
 out vec4 FragColor;
 
-void main()
+void main(void)
 {
     vec3 normal = normalize(worldNormal);
 

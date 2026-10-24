@@ -18,6 +18,7 @@
 #include <moon.h>
 #include <clock.h>
 #include <plain.h>
+#include <rocket.h>
 
 void Scene::rotateCamera(float deltaX, float deltaY)
 {
@@ -72,7 +73,7 @@ void Scene::createSignature()
 
     // Create and compile the vertex and fragment shaders
     Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
-    Shader fragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
+    Shader fragment(GL_FRAGMENT_SHADER, "shaders/constant.frag");
 
     // Create and link the shader program 
     ShaderProgram& program = addShaderProgram(vertex, fragment, false);
@@ -90,37 +91,6 @@ void Scene::createSignature()
 	transformation->add(std::move(scale));
 
     loginObject.setTransformation(std::move(transformation));
-}
-
-void Scene::createTriangle()
-{
-    clear();
-
-    // Create and compile the vertex and fragment shaders
-    Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
-    Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
-
-    // Create and link the shader program 
-    ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
-
-	float triangle[] = {
-        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,
-        0.5f,  -0.5f, 0.0f,     0.0f, 1.0f, 0.0f,
-         0.0f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f
-    };
-
-    Model& triangleMesh = addModel(triangle, std::size(triangle), VertexFormat::PositionColor);
-
-	DrawableObject& triangleObject = addObject(triangleMesh, basic);
-
-    auto translation = TransformationFactory::makeTranslation(0.5f, 0.0f, 0.0f);
-    auto rotation = TransformationFactory::makeRotation(1.0f, 0.0f, 1.0f, 0.0f);
-
-    auto transformation = std::make_unique<CompositeTransformation>();
-    transformation->add(std::move(translation));
-    transformation->add(std::move(rotation));
-
-    triangleObject.setTransformation(std::move(transformation));
 }
 
 void Scene::createClock()
@@ -255,26 +225,6 @@ void Scene::createForest()
     sun.setTransformation(std::move(transformation));
 }
 
-void Scene::createLogin()
-{
-    clear();
-
-    // Create and compile the vertex and fragment shaders
-    Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
-	Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
-
-    // Create and link the shader program 
-	ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
-
-    Model& loginMesh = addModel(cho0289, std::size(cho0289), VertexFormat::PositionNormal);
-
-	DrawableObject& login = addObject(loginMesh, basic);
-
-	auto rotation = TransformationFactory::makeDynamicRotation(0.5f, 0.0f, 1.0f, 0.0f);
-
-	login.setTransformation(std::move(rotation));
-}
-
 void Scene::createSolarSystem()
 {
     clear();
@@ -336,8 +286,176 @@ void Scene::createSolarSystem()
     moonObject.setTransformation(std::move(moonTransformation));
 }
 
+void Scene::createLightingTest()
+{
+    clear();
+
+    camera.setPosition(glm::vec3(0.0f, 10.0f, 0.175f));
+    camera.setAngles(179.0f, 270.0f);
+    camera.setFieldOfView(45.0f);
+
+    Shader vertex(GL_VERTEX_SHADER, "shaders/lighting.vert");
+    Shader constantFragment(GL_FRAGMENT_SHADER, "shaders/constant.frag");
+    Shader lambertFragment(GL_FRAGMENT_SHADER, "shaders/lambert.frag");
+    Shader phongFragment(GL_FRAGMENT_SHADER, "shaders/phong.frag");
+    Shader blinnFragment(GL_FRAGMENT_SHADER, "shaders/blinn.frag");
+
+    ShaderProgram& constantProgram = addShaderProgram(vertex, constantFragment);
+    ShaderProgram& lambertProgram = addShaderProgram(vertex, lambertFragment);
+    ShaderProgram& phongProgram = addShaderProgram(vertex, phongFragment);
+    ShaderProgram& blinnProgram = addShaderProgram(vertex, blinnFragment);
+
+    constantProgram.setUniform("objectColor", glm::vec3(0.385f, 0.647f, 0.812f));
+    constantProgram.setUniform("useVertexColor", 0.0f);
+
+    lambertProgram.setUniform("lightPosition", glm::vec3(0.0f));
+    lambertProgram.setUniform("lightColor", glm::vec3(1.0f));
+    lambertProgram.setUniform("objectColor", glm::vec3(0.385f, 0.647f, 0.812f));
+    lambertProgram.setUniform("ambientStrength", 0.0f);
+
+    phongProgram.setUniform("lightPosition", glm::vec3(0.0f));
+    phongProgram.setUniform("lightColor", glm::vec3(1.0f));
+    phongProgram.setUniform("objectColor", glm::vec3(0.385f, 0.647f, 0.812f));
+    phongProgram.setUniform("ambientStrength", 0.08f);
+    phongProgram.setUniform("specularStrength", 0.8f);
+    phongProgram.setUniform("shininess", 32.0f);
+    phongProgram.setUniform("useVertexColor", 0.0f);
+
+    blinnProgram.setUniform("lightPosition", glm::vec3(0.0f));
+    blinnProgram.setUniform("lightColor", glm::vec3(1.0f));
+    blinnProgram.setUniform("objectColor", glm::vec3(0.385f, 0.647f, 0.812f));
+    blinnProgram.setUniform("ambientStrength", 0.08f);
+    blinnProgram.setUniform("specularStrength", 0.8f);
+    blinnProgram.setUniform("shininess", 128.0f);
+    blinnProgram.setUniform("useVertexColor", 0.0f);
+
+    ShaderProgram::unuse();
+
+	Model& sphereMesh = addModel(sphere, std::size(sphere), VertexFormat::PositionNormal);
+
+    const glm::vec3 positions[] = {
+        { 2.0f, 0.0f, 0.0f},
+        { 0.0f, 0.0f, -2.0f},
+        { 0.0f, 0.0f,  2.0f},
+        { -2.0f, 0.0f,  0.0f}
+    };
+
+    ShaderProgram* programs[] = {
+        &constantProgram, &lambertProgram, &phongProgram, &blinnProgram
+    };
+
+    for (std::size_t i = 0; i < std::size(positions); i++)
+    {
+        DrawableObject& object = addObject(sphereMesh, *programs[i]);
+
+        const glm::vec3& position = positions[i];
+
+        auto transformation = std::make_unique<CompositeTransformation>();
+
+        transformation->add(TransformationFactory::makeTranslation(position.x, position.y, position.z));
+        transformation->add(TransformationFactory::makeScale(0.85f));
+
+        object.setTransformation(std::move(transformation));
+    }
+}
+
+void Scene::createLitSolarSystem()
+{
+    clear();
+
+    camera.setPosition(glm::vec3(0.0f, 9.0f, 13.0f));
+    camera.setAngles(125.0f, 270.0f);
+    camera.setFieldOfView(60.0f);
+
+	Shader lightingVertex(GL_VERTEX_SHADER, "shaders/lighting.vert");
+	Shader constantFragment(GL_FRAGMENT_SHADER, "shaders/constant.frag");
+	Shader phongFragment(GL_FRAGMENT_SHADER, "shaders/phong.frag");
+	Shader blinnFragment(GL_FRAGMENT_SHADER, "shaders/blinn.frag");
+
+	ShaderProgram& constantProgram = addShaderProgram(lightingVertex, constantFragment);
+	ShaderProgram& phongProgram = addShaderProgram(lightingVertex, phongFragment);
+	ShaderProgram& blinnProgram = addShaderProgram(lightingVertex, blinnFragment);
+
+    constantProgram.setUniform("useVertexColor", 1.0f);
+    constantProgram.setUniform("objectColor", glm::vec3(1.0f, 0.75f, 0.1f));
+
+    phongProgram.setUniform("useVertexColor", 1.0f);
+    phongProgram.setUniform("lightPosition", glm::vec3(0.0f));
+    phongProgram.setUniform("objectColor", glm::vec3(0.15f, 0.4f, 0.85f));
+    phongProgram.setUniform("shininess", 32.0f);
+
+    blinnProgram.setUniform("useVertexColor", 1.0f);
+    blinnProgram.setUniform("lightPosition", glm::vec3(0.0f));
+    blinnProgram.setUniform("objectColor", glm::vec3(0.65f, 0.65f, 0.68f));
+    blinnProgram.setUniform("shininess", 128.0f);
+    blinnProgram.setUniform("specularStrength", 0.25f);
+
+    ShaderProgram::unuse();
+
+    Model& sunMesh = addModel(sun, std::size(sun), VertexFormat::PositionColorNormal);
+    Model& earthMesh = addModel(earth, std::size(earth), VertexFormat::PositionColorNormal);
+    Model& moonMesh = addModel(moon, std::size(moon), VertexFormat::PositionColorNormal);
+	Model& rocketMesh = addModel(rocket, std::size(rocket), VertexFormat::PositionColorNormal);
+
+    DrawableObject& sunObject = addObject(sunMesh, constantProgram);
+    DrawableObject& earthObject = addObject(earthMesh, phongProgram);
+    DrawableObject& moonObject = addObject(moonMesh, blinnProgram);
+	DrawableObject& rocketObject = addObject(rocketMesh, blinnProgram);
+
+    auto sunTransformation = std::make_unique<CompositeTransformation>();
+
+    sunTransformation->add(TransformationFactory::makeScale(1.2f));
+	sunTransformation->add(TransformationFactory::makeDynamicRotation(0.5f, 0.0f, 1.0f, 0.0f));
+
+	sunObject.setTransformation(std::move(sunTransformation));
+
+    const float earthOrbitSpeed = 0.35f;
+    const float earthOrbitRadius = 4.5f;
+
+    auto earthTransformation = std::make_unique<CompositeTransformation>();
+
+    // Orbit around the Sun.
+    earthTransformation->add(TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 1.0f, 0.0f));
+    earthTransformation->add(TransformationFactory::makeTranslation(earthOrbitRadius, 0.0f, 0.0f));
+
+    // Rotate around Earth's own axis.
+    earthTransformation->add(TransformationFactory::makeDynamicRotation(1.2f, 0.0f, 1.0f, 0.0f));
+    earthTransformation->add(TransformationFactory::makeScale(0.65f));
+
+    earthObject.setTransformation(std::move(earthTransformation));
+
+    auto moonTransformation = std::make_unique<CompositeTransformation>();
+
+    // Follow Earth's orbital position.
+    moonTransformation->add(TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 1.0f, 0.0f));
+    moonTransformation->add(TransformationFactory::makeTranslation(earthOrbitRadius, 0.0f, 0.0f));
+
+    // Orbit around Earth in its orbital frame.
+    moonTransformation->add(TransformationFactory::makeDynamicRotation(1.4f, 0.0f, 1.0f, 0.0f));
+    moonTransformation->add(TransformationFactory::makeTranslation(1.3f, 0.0f, 0.0f));
+    moonTransformation->add(TransformationFactory::makeScale(0.25f));
+
+    moonObject.setTransformation(std::move(moonTransformation));
+
+	auto rocketTransformation = std::make_unique<CompositeTransformation>();
+
+	rocketTransformation->add(TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 1.0f, 0.0f));
+	rocketTransformation->add(TransformationFactory::makeTranslation(earthOrbitRadius, 0.0f, 0.0f));
+
+    rocketTransformation->add(TransformationFactory::makeDynamicRotation(1.4f, 0.0f, 0.0f, 1.0f, 3.14159265f));
+    rocketTransformation->add(TransformationFactory::makeTranslation(1.3f, 0.0f, 0.0f));
+	rocketTransformation->add(TransformationFactory::makeScale(0.25f));
+
+	rocketObject.setTransformation(std::move(rocketTransformation));
+}
+
 void Scene::draw(double timeSeconds)
 {
+    for (const auto& program : shaderPrograms)
+    {
+        program->updateTimeUniform();
+    }
+
     for (const auto& object : objects)
     {
         object->draw(timeSeconds);
