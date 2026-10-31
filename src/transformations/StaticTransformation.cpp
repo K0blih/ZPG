@@ -24,19 +24,19 @@ void StaticTransformation::scale(float value)
 	scale(value, value, value);
 }
 
-void StaticTransformation::rotate(float angleRadians, const glm::vec3& axis)
+void StaticTransformation::rotate(float angleDegrees, const glm::vec3& axis)
 {
 	if (glm::dot(axis, axis) == 0.0f)
 	{
 		throw std::invalid_argument("Axis vector cannot be zero");
 	}
 
-	matrix = glm::rotate(matrix, angleRadians, glm::normalize(axis));
+	matrix = glm::rotate(matrix, glm::radians(angleDegrees), glm::normalize(axis));
 }
 
-void StaticTransformation::rotate(float angleRadians, float x, float y, float z)
+void StaticTransformation::rotate(float angleDegrees, float x, float y, float z)
 {
-	rotate(angleRadians, glm::vec3(x, y, z));
+	rotate(angleDegrees, glm::vec3(x, y, z));
 }
 
 glm::mat4 StaticTransformation::getMatrix(double timeSeconds) const

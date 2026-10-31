@@ -5,8 +5,8 @@
 
 #include <stdexcept>
 
-DynamicTransformation::DynamicTransformation(float radiansPerSecond, const glm::vec3& axis, float initialAngle)
-	: radiansPerSecond(radiansPerSecond), axis(axis), initialAngle(initialAngle)
+DynamicTransformation::DynamicTransformation(float degreesPerSecond, const glm::vec3& axis, float initialAngleDegrees)
+	: degreesPerSecond(degreesPerSecond), axis(axis), initialAngleDegrees(initialAngleDegrees)
 {
 	if (glm::dot(axis, axis) == 0.0f)
 	{
@@ -16,14 +16,14 @@ DynamicTransformation::DynamicTransformation(float radiansPerSecond, const glm::
 	this->axis = glm::normalize(axis);
 }
 
-DynamicTransformation::DynamicTransformation(float radiansPerSecond, float x, float y, float z, float initialAngle)
-	: DynamicTransformation(radiansPerSecond, glm::vec3(x, y, z), initialAngle)
+DynamicTransformation::DynamicTransformation(float degreesPerSecond, float x, float y, float z, float initialAngleDegrees)
+	: DynamicTransformation(degreesPerSecond, glm::vec3(x, y, z), initialAngleDegrees)
 {
 }
 
 glm::mat4 DynamicTransformation::getMatrix(double timeSeconds) const
 {
-	const double angle = initialAngle + radiansPerSecond * timeSeconds;
+	const double angleDegrees = initialAngleDegrees + degreesPerSecond * timeSeconds;
 
-	return glm::rotate(glm::mat4(1.0f), static_cast<float>(angle), axis);
+	return glm::rotate(glm::mat4(1.0f), glm::radians(static_cast<float>(angleDegrees)), axis);
 }

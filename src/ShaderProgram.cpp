@@ -1,5 +1,7 @@
 #include "ShaderProgram.h"
 #include "Shader.h"
+#include "Light.h"
+#include "Material.h"
 
 #include <GLFW/glfw3.h>
 
@@ -117,6 +119,30 @@ void ShaderProgram::setUniform(const char* name, const glm::mat4& value) const
 	glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
 }
 
+void ShaderProgram::setOptionalUniform(const char* name, float value) const
+{
+	const GLint location = findUniformLocation(name);
+
+	if (location == -1) {
+		return;
+	}
+
+	use();
+	glUniform1f(location, value);
+}
+
+void ShaderProgram::setOptionalUniform(const char* name, const glm::vec3& value) const
+{
+	const GLint location = findUniformLocation(name);
+
+	if (location == -1) {
+		return;
+	}
+
+	use();
+	glUniform3f(location, value.x, value.y, value.z);
+}
+
 void ShaderProgram::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& position)
 {
 	cameraView = viewMatrix;
@@ -131,6 +157,15 @@ void ShaderProgram::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4
 	{
 		setUniform("cameraPosition", cameraPosition);
 	}
+}
+
+void ShaderProgram::onLightChanged(const glm::vec3& position, const glm::vec3& color, float constant, float linear, float quadratic)
+{
+	setUniform("lightPosition", position);
+	setUniform("lightColor", color);
+	setUniform("attenuationConstant", constant);
+	setUniform("attenuationLinear", linear);
+	setUniform("attenuationQuadratic", quadratic);
 }
 
 ShaderProgram::~ShaderProgram()

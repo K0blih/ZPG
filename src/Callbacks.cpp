@@ -43,6 +43,9 @@ namespace {
 		case GLFW_KEY_5:
 			app->switchScene(4);
 			break;
+		case GLFW_KEY_6:
+			app->switchScene(5);
+			break;
 		}
 
 		//printf("key_callback [%d,%d,%d,%d] \n", key, scancode, action, mods);

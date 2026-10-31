@@ -4,7 +4,9 @@
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
+
 #include <array>
+#include <memory>
 
 class Application {
 public:
@@ -23,7 +25,7 @@ public:
 	void resetHeldKeys();
 
 	void initialization();
-	void createScene();
+	void createScenes();
 	void switchScene(int index);
 	void run();
 
@@ -31,14 +33,13 @@ private:
 	GLFWwindow* window = nullptr;
 	bool glfwinitialized = false;
 
-	Scene signature;
-	Scene scenes[5];
+	std::unique_ptr<Scene> signature;
+	std::array<std::unique_ptr<Scene>, 6> scenes;
 	int activeScene = 0;
 
+	std::array<bool, GLFW_KEY_LAST + 1> heldKeys{ false };
 	bool mouseLookActive = false;
 	bool firstMouse = true;
 	double lastMouseX = 0.0;
 	double lastMouseY = 0.0;
-
-	std::array<bool, GLFW_KEY_LAST + 1> heldKeys{false};
 };

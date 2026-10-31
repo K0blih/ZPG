@@ -12,8 +12,8 @@ public:
 	void translate(float x, float y, float z);
 	void scale(float x, float y, float z);
 	void scale(float value);
-	void rotate(float angleRadians, const glm::vec3& axis);
-	void rotate(float angleRadians, float x, float y, float z);
+	void rotate(float angleDegrees, const glm::vec3& axis);
+	void rotate(float angleDegrees, float x, float y, float z);
 
     glm::mat4 getMatrix(double timeSeconds) const override;
 

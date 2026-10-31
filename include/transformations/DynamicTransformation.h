@@ -6,13 +6,13 @@
 
 class DynamicTransformation final : public ITransformation {
 public:
-    DynamicTransformation(float radiansPerSecond, const glm::vec3& axis, float initialAngle = 0.0f);
-    DynamicTransformation(float radiansPerSecond, float x, float y, float z, float initialAngle = 0.0f);
+    DynamicTransformation(float degreesPerSecond, const glm::vec3& axis, float initialAngleDegrees = 0.0f);
+    DynamicTransformation(float degreesPerSecond, float x, float y, float z, float initialAngleDegrees = 0.0f);
 
     glm::mat4 getMatrix(double timeSeconds) const override;
 
 private:
-    float radiansPerSecond;
+    float degreesPerSecond;
     glm::vec3 axis;
-    float initialAngle;
+    float initialAngleDegrees;
 };

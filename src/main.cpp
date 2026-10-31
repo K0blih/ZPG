@@ -17,7 +17,7 @@ int main(void)
 	try
 	{
 		app.initialization();
-		app.createScene();
+		app.createScenes();
 		app.run();
 	}
 	catch (const std::exception& e)

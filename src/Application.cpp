@@ -7,6 +7,7 @@
 #include "Application.h"
 #include "Scene.h"
 #include "Callbacks.h"
+#include "SceneFactory.h"
 
 // Include the standard C++ headers  
 #include <stdio.h>
@@ -16,15 +17,17 @@ void Application::resizeFramebuffer(int width, int height)
 {
 	glViewport(0, 0, width, height);
 
-	for (Scene& scene : scenes)
+	for (const auto& scene : scenes)
 	{
-		scene.resizeCamera(width, height);
+		if (scene) {
+			scene->resizeCamera(width, height);
+		}
 	}
 }
 
 void Application::handleMouseMove(double x, double y)
 {
-	if (!mouseLookActive)
+	if (!mouseLookActive || !scenes[activeScene])
 	{
 		return;
 	}
@@ -43,7 +46,7 @@ void Application::handleMouseMove(double x, double y)
 	lastMouseX = x;
 	lastMouseY = y;
 
-	scenes[activeScene].rotateCamera(deltaX, deltaY);
+	scenes[activeScene]->rotateCamera(deltaX, deltaY);
 }
 
 void Application::setMouseLookActive(bool active)
@@ -150,21 +153,27 @@ void Application::initialization()
 	resizeFramebuffer(width, height);
 }
 
-void Application::createScene()
+void Application::createScenes()
 {
 	// Create the scenes
-	scenes[0].createClock();
-	scenes[1].createLightingTest();
-	scenes[2].createForest();
-	scenes[3].createSolarSystem();
-	scenes[4].createLitSolarSystem();
+    scenes[0] = SceneFactory::createClock();
+    scenes[1] = SceneFactory::createLightingTest();
+    scenes[2] = SceneFactory::createForest();
+    scenes[3] = SceneFactory::createSolarSystem();
+    scenes[4] = SceneFactory::createLitSolarSystem();
+    scenes[5] = SceneFactory::createNightForest();
 
-	signature.createSignature();
+    signature = SceneFactory::createSignature();
+
+    // New cameras did not exist during the initial framebuffer resize.
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    resizeFramebuffer(width, height);
 }
 
 void Application::switchScene(int index)
 {
-	if (index >= 0 && index < 5)
+	if (index >= 0 && index < static_cast<int>(scenes.size()) && scenes[index])
 	{
 		activeScene = index;
 		resetMouseTracking();
@@ -207,15 +216,15 @@ void Application::run()
 			rightInput -= 1.0f;
 		}
 
-		scenes[activeScene].moveCamera(forwardInput, rightInput, deltaTime);
+		scenes[activeScene]->moveCamera(forwardInput, rightInput, deltaTime);
 
 		const double timeSeconds = currentTime - startTime;
 
 		// Clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Draw a triangles
-		scenes[activeScene].draw(timeSeconds);
-		signature.draw(timeSeconds);
+		scenes[activeScene]->draw(timeSeconds);
+		signature->draw(timeSeconds);
 
 		// Display the rendered frame
 		glfwSwapBuffers(window);
@@ -228,12 +237,13 @@ Application::~Application()
 {
 	if (window)
 	{
-		for (Scene& scene : scenes)
+		glfwMakeContextCurrent(window);
+		for (auto& scene : scenes)
 		{
-			scene.clear();
+			scene.reset();
 		}
 
-		signature.clear();
+		signature.reset();
 
 		glfwDestroyWindow(window);
 	}

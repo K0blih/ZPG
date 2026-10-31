@@ -167,8 +167,12 @@
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\DrawableObject.h" />
     <ClInclude Include="include\ICameraObserver.h" />
+    <ClInclude Include="include\ILightObserver.h" />
+    <ClInclude Include="include\Light.h" />
+    <ClInclude Include="include\Material.h" />
     <ClInclude Include="include\Model.h" />
     <ClInclude Include="include\Scene.h" />
+    <ClInclude Include="include\SceneFactory.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\ShaderProgram.h" />
     <ClInclude Include="include\transformations\CompositeTransformation.h" />
@@ -197,9 +201,12 @@
     <ClCompile Include="src\Callbacks.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\DrawableObject.cpp" />
+    <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\SceneFactory.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
     <ClCompile Include="src\transformations\CompositeTransformation.cpp" />

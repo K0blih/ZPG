@@ -1,24 +1,22 @@
 #include "Scene.h"
 #include "Shader.h"
-#include "transformations/TransformationFactory.h"
-#include "transformations/CompositeTransformation.h"
-#include "VertexFormat.h"
 
-#include <iterator>
 #include <memory>
 #include <utility>
-#include <random>
 
-#include <sphere.h>
-#include <bushes.h>
-#include <tree.h>
-#include <CHO0289.h>
-#include <sun.h>
-#include <earth.h>
-#include <moon.h>
-#include <clock.h>
-#include <plain.h>
-#include <rocket.h>
+void Scene::configureCamera(float alphaDegrees, float fiDegrees, const glm::vec3& position, float fieldOfViewDegrees)
+{
+	camera.setPosition(position);
+	camera.setAngles(alphaDegrees, fiDegrees);
+	camera.setFieldOfView(fieldOfViewDegrees);
+}
+
+void Scene::configureLight(const glm::vec3& position, const glm::vec3& color, float constant, float linear, float quadratic)
+{
+	light.setPosition(position);
+	light.setColor(color);
+	light.setAttenuation(constant, linear, quadratic);
+}
 
 void Scene::rotateCamera(float deltaX, float deltaY)
 {
@@ -44,7 +42,14 @@ Model& Scene::addModel(const float* vertices, std::size_t floatCount, VertexForm
     return *models.back();
 }
 
-ShaderProgram& Scene::addShaderProgram(const Shader& vertexShader, const Shader& fragmentShader, bool useCamera)
+Material& Scene::addMaterial()
+{
+    materials.push_back(std::make_unique<Material>());
+
+    return *materials.back();
+}
+
+ShaderProgram& Scene::addShaderProgram(const Shader& vertexShader, const Shader& fragmentShader, bool useCamera, bool useLighting)
 {
     auto program = std::make_unique<ShaderProgram>();
     program->link(vertexShader, fragmentShader);
@@ -58,395 +63,17 @@ ShaderProgram& Scene::addShaderProgram(const Shader& vertexShader, const Shader&
         camera.subscribe(result);
 	}
 
+    if (useLighting) {
+        light.subscribe(result);
+    }
+
     return result;
 }
 
-DrawableObject& Scene::addObject(Model& model, ShaderProgram& shaderProgram)
+DrawableObject& Scene::addObject(Model& model, ShaderProgram& shaderProgram, Material& material)
 {
-    objects.push_back(std::make_unique<DrawableObject>(model, shaderProgram));
+    objects.push_back(std::make_unique<DrawableObject>(model, shaderProgram, material));
     return *objects.back();
-}
-
-void Scene::createSignature()
-{
-    clear();
-
-    // Create and compile the vertex and fragment shaders
-    Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
-    Shader fragment(GL_FRAGMENT_SHADER, "shaders/constant.frag");
-
-    // Create and link the shader program 
-    ShaderProgram& program = addShaderProgram(vertex, fragment, false);
-
-    Model& loginMesh = addModel(cho0289, std::size(cho0289), VertexFormat::PositionNormal);
-
-    DrawableObject& loginObject = addObject(loginMesh, program);
-
-	auto translation = TransformationFactory::makeTranslation(0.83f, -0.95f, 0.0f);
-
-	auto scale = TransformationFactory::makeScale(0.15f);
-
-	auto transformation = std::make_unique<CompositeTransformation>();
-	transformation->add(std::move(translation));
-	transformation->add(std::move(scale));
-
-    loginObject.setTransformation(std::move(transformation));
-}
-
-void Scene::createClock()
-{
-    clear();
-
-    // Create and compile the vertex and fragment shaders
-    Shader vertex(GL_VERTEX_SHADER, "shaders/clock.vert");
-    Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/clock.frag");
-
-    // Create and link the shader program 
-    ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
-
-    Model& clockMesh = addModel(clockModel, std::size(clockModel), VertexFormat::PositionNormalColor);
-
-    DrawableObject& clockObject = addObject(clockMesh, basic);
-
-    auto scale = TransformationFactory::makeScale(1.0f, 1.0f, -1.0f);
-
-    clockObject.setTransformation(std::move(scale));
-}
-
-void Scene::createForest()
-{
-    clear();
-
-    // Create and compile the vertex and fragment shaders
-    Shader treeVertex(GL_VERTEX_SHADER, "shaders/forest.vert");
-    Shader bushVertex(GL_VERTEX_SHADER, "shaders/bush.vert");
-    Shader groundVertex(GL_VERTEX_SHADER, "shaders/ground.vert");
-    Shader forestFragment(GL_FRAGMENT_SHADER, "shaders/forest.frag");
-
-    Shader clockVertex(GL_VERTEX_SHADER, "shaders/clock.vert");
-    Shader clockFragment(GL_FRAGMENT_SHADER, "shaders/clock.frag");
-
-    Shader basicVertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
-    Shader sunFragment(GL_FRAGMENT_SHADER, "shaders/sun.frag");
-
-    // Create and link the shader program 
-    ShaderProgram& treeProgram = addShaderProgram(treeVertex, forestFragment);
-    ShaderProgram& bushProgram = addShaderProgram(bushVertex, forestFragment);
-    ShaderProgram& groundProgram = addShaderProgram(groundVertex, forestFragment);
-    ShaderProgram& clockProgram = addShaderProgram(clockVertex, clockFragment);
-    ShaderProgram& sunProgram = addShaderProgram(basicVertex, sunFragment);
-
-    Model& treeMesh = addModel(tree, std::size(tree), VertexFormat::PositionNormal);
-    Model& bushMesh = addModel(bushes, std::size(bushes), VertexFormat::PositionNormal);
-	Model& groundMesh = addModel(plain, std::size(plain), VertexFormat::PositionNormal);
-	Model& clockMesh = addModel(clockModel, std::size(clockModel), VertexFormat::PositionNormalColor);
-    Model& sphereMesh = addModel(sphere, std::size(sphere), VertexFormat::PositionNormal);
-
-    DrawableObject& ground = addObject(groundMesh, groundProgram);
-
-    auto groundTransformation = std::make_unique<CompositeTransformation>();
-    groundTransformation->add(TransformationFactory::makeTranslation(0.0f, -0.9f, -5.0f));
-    groundTransformation->add(TransformationFactory::makeScale(6.0f, 1.0f, 7.0f));
-
-    ground.setTransformation(std::move(groundTransformation));
-
-    std::mt19937 generator(std::random_device{}());
-    std::uniform_real_distribution<float> jitter(-0.20f, 0.20f);
-    std::uniform_real_distribution<float> randomAngle(0.0f, 6.2831853f);
-    std::uniform_real_distribution<float> randomTreeScale(0.18f, 0.28f);
-    std::uniform_real_distribution<float> randomBushScale(0.7f, 1.3f);
-    std::uniform_real_distribution<float> randomBushX(-4.8f, 4.8f);
-    std::uniform_real_distribution<float> randomBushZ(-10.0f, -0.8f);
-
-    // 80 trees with random positions, rotations and scales.
-    for (int i = 0; i < 80; i++)
-    {
-        DrawableObject& treeObject = addObject(treeMesh, treeProgram);
-
-        const float x = -4.5f + (i % 10) + jitter(generator);
-        const float z = -1.0f - (i / 10) * 1.25f + jitter(generator);
-
-        auto transformation = std::make_unique<CompositeTransformation>();
-
-        transformation->add(TransformationFactory::makeTranslation(x, -0.9f, z));
-        transformation->add(TransformationFactory::makeRotation(randomAngle(generator), 0.0f, 1.0f, 0.0f));
-        transformation->add(TransformationFactory::makeScale(randomTreeScale(generator)));
-
-        treeObject.setTransformation(std::move(transformation));
-    }
-
-    // 24 bushes spread across the ground.
-    for (int i = 0; i < 24; i++)
-    {
-        DrawableObject& bushObject = addObject(bushMesh, bushProgram);
-
-        const float x = randomBushX(generator);
-        const float z = randomBushZ(generator);
-        const float scale = randomBushScale(generator);
-
-        auto transformation = std::make_unique<CompositeTransformation>();
-
-        transformation->add(TransformationFactory::makeTranslation(x, -0.9f, z));
-        transformation->add(TransformationFactory::makeRotation(randomAngle(generator), 0.0f, 1.0f, 0.0f));
-        transformation->add(TransformationFactory::makeScale(scale));
-
-        bushObject.setTransformation(std::move(transformation));
-    }
-
-    // 2 clocks
-    for (int i = 0; i < 2; i++)
-    {
-        DrawableObject& clockObject = addObject(clockMesh, clockProgram);
-
-        const float x = (i == 0) ? 0.0f : 2.0f;
-        const float z = (i == 0) ? -3.0f : -7.9f;
-        const float angle = (i == 0) ? 0.20f : -0.35f;
-        const float scale = (i == 0) ? 0.18f : 0.22f;
-
-        auto transformation = std::make_unique<CompositeTransformation>();
-
-        transformation->add(TransformationFactory::makeTranslation(x, -0.9f + scale, z));
-        transformation->add(TransformationFactory::makeRotation(angle, 0.0f, 1.0f, 0.0f));
-        transformation->add(TransformationFactory::makeScale(scale, scale, -scale));
-
-        clockObject.setTransformation(std::move(transformation));
-    }
-
-    DrawableObject& sun = addObject(sphereMesh, sunProgram);
-
-    // Place a larger sun above and beyond the forest.
-    auto translation = TransformationFactory::makeTranslation(8.0f, 9.0f, -30.0f);
-    auto scale = TransformationFactory::makeScale(3.5f);
-
-    auto transformation = std::make_unique<CompositeTransformation>();
-    transformation->add(std::move(translation));
-    transformation->add(std::move(scale));
-
-    sun.setTransformation(std::move(transformation));
-}
-
-void Scene::createSolarSystem()
-{
-    clear();
-
-	Shader vertex(GL_VERTEX_SHADER, "shaders/transform3D.vert");
-	Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/basic.frag");
-
-	ShaderProgram& basic = addShaderProgram(vertex, basicFragment);
-
-	Model& sunMesh = addModel(sun, std::size(sun), VertexFormat::PositionColorNormal);
-    Model& moonMesh = addModel(moon, std::size(moon), VertexFormat::PositionColorNormal);
-    Model& earthMesh = addModel(earth, std::size(earth), VertexFormat::PositionColorNormal);
-
-	DrawableObject& sunObject = addObject(sunMesh, basic);
-	DrawableObject& moonObject = addObject(moonMesh, basic);
-	DrawableObject& earthObject = addObject(earthMesh, basic);
-
-    // Sun rotates around its own axis.
-    auto sunRotation = TransformationFactory::makeDynamicRotation(0.5f, 0.0f, 1.0f, 0.0f);
-    auto sunScale = TransformationFactory::makeScale(0.2f);
-
-    auto sunTransformation = std::make_unique<CompositeTransformation>();
-    sunTransformation->add(std::move(sunRotation));
-    sunTransformation->add(std::move(sunScale));
-
-    sunObject.setTransformation(std::move(sunTransformation));
-
-    const float earthOrbitSpeed = 0.35f;
-    const float earthOrbitRadius = 0.55f;
-
-    // Earth orbits the Sun in the XY plane and rotates around its own axis.
-    auto earthOrbit = TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 1.0f, 0.0f);
-    auto earthTranslation = TransformationFactory::makeTranslation(earthOrbitRadius, 0.0f, 0.0f);
-    auto earthRotation = TransformationFactory::makeDynamicRotation(1.2f, 0.0f, 1.0f, 0.0f);
-    auto earthScale = TransformationFactory::makeScale(0.1f);
-
-    auto earthTransformation = std::make_unique<CompositeTransformation>();
-    earthTransformation->add(std::move(earthOrbit));
-    earthTransformation->add(std::move(earthTranslation));
-    earthTransformation->add(std::move(earthRotation));
-    earthTransformation->add(std::move(earthScale));
-
-    earthObject.setTransformation(std::move(earthTransformation));
-
-    // Moon follows Earth's orbit, then adds its own orbit around Earth.
-    auto moonEarthOrbit = TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 1.0f, 0.0f);
-    auto moonEarthTranslation = TransformationFactory::makeTranslation(earthOrbitRadius, 0.0f, 0.0f);
-    auto moonOrbit = TransformationFactory::makeDynamicRotation(-1.4f, 0.0f, 1.0f, 0.0f);
-    auto moonTranslation = TransformationFactory::makeTranslation(0.18f, 0.0f, 0.0f);
-    auto moonScale = TransformationFactory::makeScale(0.035f);
-
-    auto moonTransformation = std::make_unique<CompositeTransformation>();
-    moonTransformation->add(std::move(moonEarthOrbit));
-    moonTransformation->add(std::move(moonEarthTranslation));
-    moonTransformation->add(std::move(moonOrbit));
-    moonTransformation->add(std::move(moonTranslation));
-    moonTransformation->add(std::move(moonScale));
-
-    moonObject.setTransformation(std::move(moonTransformation));
-}
-
-void Scene::createLightingTest()
-{
-    clear();
-
-    camera.setPosition(glm::vec3(0.0f, 10.0f, 0.175f));
-    camera.setAngles(179.0f, 270.0f);
-    camera.setFieldOfView(45.0f);
-
-    Shader vertex(GL_VERTEX_SHADER, "shaders/lighting.vert");
-    Shader constantFragment(GL_FRAGMENT_SHADER, "shaders/constant.frag");
-    Shader lambertFragment(GL_FRAGMENT_SHADER, "shaders/lambert.frag");
-    Shader phongFragment(GL_FRAGMENT_SHADER, "shaders/phong.frag");
-    Shader blinnFragment(GL_FRAGMENT_SHADER, "shaders/blinn.frag");
-
-    ShaderProgram& constantProgram = addShaderProgram(vertex, constantFragment);
-    ShaderProgram& lambertProgram = addShaderProgram(vertex, lambertFragment);
-    ShaderProgram& phongProgram = addShaderProgram(vertex, phongFragment);
-    ShaderProgram& blinnProgram = addShaderProgram(vertex, blinnFragment);
-
-    constantProgram.setUniform("objectColor", glm::vec3(0.385f, 0.647f, 0.812f));
-    constantProgram.setUniform("useVertexColor", 0.0f);
-
-    lambertProgram.setUniform("lightPosition", glm::vec3(0.0f));
-    lambertProgram.setUniform("lightColor", glm::vec3(1.0f));
-    lambertProgram.setUniform("objectColor", glm::vec3(0.385f, 0.647f, 0.812f));
-    lambertProgram.setUniform("ambientStrength", 0.0f);
-
-    phongProgram.setUniform("lightPosition", glm::vec3(0.0f));
-    phongProgram.setUniform("lightColor", glm::vec3(1.0f));
-    phongProgram.setUniform("objectColor", glm::vec3(0.385f, 0.647f, 0.812f));
-    phongProgram.setUniform("ambientStrength", 0.08f);
-    phongProgram.setUniform("specularStrength", 0.8f);
-    phongProgram.setUniform("shininess", 32.0f);
-    phongProgram.setUniform("useVertexColor", 0.0f);
-
-    blinnProgram.setUniform("lightPosition", glm::vec3(0.0f));
-    blinnProgram.setUniform("lightColor", glm::vec3(1.0f));
-    blinnProgram.setUniform("objectColor", glm::vec3(0.385f, 0.647f, 0.812f));
-    blinnProgram.setUniform("ambientStrength", 0.08f);
-    blinnProgram.setUniform("specularStrength", 0.8f);
-    blinnProgram.setUniform("shininess", 128.0f);
-    blinnProgram.setUniform("useVertexColor", 0.0f);
-
-    ShaderProgram::unuse();
-
-	Model& sphereMesh = addModel(sphere, std::size(sphere), VertexFormat::PositionNormal);
-
-    const glm::vec3 positions[] = {
-        { 2.0f, 0.0f, 0.0f},
-        { 0.0f, 0.0f, -2.0f},
-        { 0.0f, 0.0f,  2.0f},
-        { -2.0f, 0.0f,  0.0f}
-    };
-
-    ShaderProgram* programs[] = {
-        &constantProgram, &lambertProgram, &phongProgram, &blinnProgram
-    };
-
-    for (std::size_t i = 0; i < std::size(positions); i++)
-    {
-        DrawableObject& object = addObject(sphereMesh, *programs[i]);
-
-        const glm::vec3& position = positions[i];
-
-        auto transformation = std::make_unique<CompositeTransformation>();
-
-        transformation->add(TransformationFactory::makeTranslation(position.x, position.y, position.z));
-        transformation->add(TransformationFactory::makeScale(0.85f));
-
-        object.setTransformation(std::move(transformation));
-    }
-}
-
-void Scene::createLitSolarSystem()
-{
-    clear();
-
-    camera.setPosition(glm::vec3(0.0f, 9.0f, 13.0f));
-    camera.setAngles(125.0f, 270.0f);
-    camera.setFieldOfView(60.0f);
-
-	Shader lightingVertex(GL_VERTEX_SHADER, "shaders/lighting.vert");
-	Shader constantFragment(GL_FRAGMENT_SHADER, "shaders/constant.frag");
-	Shader phongFragment(GL_FRAGMENT_SHADER, "shaders/phong.frag");
-	Shader blinnFragment(GL_FRAGMENT_SHADER, "shaders/blinn.frag");
-
-	ShaderProgram& constantProgram = addShaderProgram(lightingVertex, constantFragment);
-	ShaderProgram& phongProgram = addShaderProgram(lightingVertex, phongFragment);
-	ShaderProgram& blinnProgram = addShaderProgram(lightingVertex, blinnFragment);
-
-    constantProgram.setUniform("useVertexColor", 1.0f);
-    constantProgram.setUniform("objectColor", glm::vec3(1.0f, 0.75f, 0.1f));
-
-    phongProgram.setUniform("useVertexColor", 1.0f);
-    phongProgram.setUniform("lightPosition", glm::vec3(0.0f));
-    phongProgram.setUniform("objectColor", glm::vec3(0.15f, 0.4f, 0.85f));
-    phongProgram.setUniform("shininess", 32.0f);
-
-    blinnProgram.setUniform("useVertexColor", 1.0f);
-    blinnProgram.setUniform("lightPosition", glm::vec3(0.0f));
-    blinnProgram.setUniform("objectColor", glm::vec3(0.65f, 0.65f, 0.68f));
-    blinnProgram.setUniform("shininess", 128.0f);
-    blinnProgram.setUniform("specularStrength", 0.25f);
-
-    ShaderProgram::unuse();
-
-    Model& sunMesh = addModel(sun, std::size(sun), VertexFormat::PositionColorNormal);
-    Model& earthMesh = addModel(earth, std::size(earth), VertexFormat::PositionColorNormal);
-    Model& moonMesh = addModel(moon, std::size(moon), VertexFormat::PositionColorNormal);
-	Model& rocketMesh = addModel(rocket, std::size(rocket), VertexFormat::PositionColorNormal);
-
-    DrawableObject& sunObject = addObject(sunMesh, constantProgram);
-    DrawableObject& earthObject = addObject(earthMesh, phongProgram);
-    DrawableObject& moonObject = addObject(moonMesh, blinnProgram);
-	DrawableObject& rocketObject = addObject(rocketMesh, blinnProgram);
-
-    auto sunTransformation = std::make_unique<CompositeTransformation>();
-
-    sunTransformation->add(TransformationFactory::makeScale(1.2f));
-	sunTransformation->add(TransformationFactory::makeDynamicRotation(0.5f, 0.0f, 1.0f, 0.0f));
-
-	sunObject.setTransformation(std::move(sunTransformation));
-
-    const float earthOrbitSpeed = 0.35f;
-    const float earthOrbitRadius = 4.5f;
-
-    auto earthTransformation = std::make_unique<CompositeTransformation>();
-
-    // Orbit around the Sun.
-    earthTransformation->add(TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 1.0f, 0.0f));
-    earthTransformation->add(TransformationFactory::makeTranslation(earthOrbitRadius, 0.0f, 0.0f));
-
-    // Rotate around Earth's own axis.
-    earthTransformation->add(TransformationFactory::makeDynamicRotation(1.2f, 0.0f, 1.0f, 0.0f));
-    earthTransformation->add(TransformationFactory::makeScale(0.65f));
-
-    earthObject.setTransformation(std::move(earthTransformation));
-
-    auto moonTransformation = std::make_unique<CompositeTransformation>();
-
-    // Follow Earth's orbital position.
-    moonTransformation->add(TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 1.0f, 0.0f));
-    moonTransformation->add(TransformationFactory::makeTranslation(earthOrbitRadius, 0.0f, 0.0f));
-
-    // Orbit around Earth in its orbital frame.
-    moonTransformation->add(TransformationFactory::makeDynamicRotation(1.4f, 0.0f, 1.0f, 0.0f));
-    moonTransformation->add(TransformationFactory::makeTranslation(1.3f, 0.0f, 0.0f));
-    moonTransformation->add(TransformationFactory::makeScale(0.25f));
-
-    moonObject.setTransformation(std::move(moonTransformation));
-
-	auto rocketTransformation = std::make_unique<CompositeTransformation>();
-
-	rocketTransformation->add(TransformationFactory::makeDynamicRotation(earthOrbitSpeed, 0.0f, 1.0f, 0.0f));
-	rocketTransformation->add(TransformationFactory::makeTranslation(earthOrbitRadius, 0.0f, 0.0f));
-
-    rocketTransformation->add(TransformationFactory::makeDynamicRotation(1.4f, 0.0f, 0.0f, 1.0f, 3.14159265f));
-    rocketTransformation->add(TransformationFactory::makeTranslation(1.3f, 0.0f, 0.0f));
-	rocketTransformation->add(TransformationFactory::makeScale(0.25f));
-
-	rocketObject.setTransformation(std::move(rocketTransformation));
 }
 
 void Scene::draw(double timeSeconds)
@@ -466,9 +93,11 @@ void Scene::clear()
 {
     for (const auto& program : shaderPrograms) {
         camera.unsubscribe(*program);
+		light.unsubscribe(*program);
     }
 
     objects.clear();
+	materials.clear();
     models.clear();
     shaderPrograms.clear();
 }
