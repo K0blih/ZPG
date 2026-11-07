@@ -3,8 +3,8 @@
 #include "ShaderProgram.h"
 #include "transformations/ITransformation.h"
 #include "Material.h"
+#include "Texture.h"
 
-#include <GLFW/glfw3.h>
 #include <utility>
 
 DrawableObject::DrawableObject(Model& model, ShaderProgram& shaderProgram, Material& material) : model(model), shaderProgram(shaderProgram), material(material)

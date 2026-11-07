@@ -20,6 +20,9 @@ void Model::create(const float* vertices, std::size_t floatCount, VertexFormat f
 	case VertexFormat::PositionNormalColor:
 		floatsPerVertex = 9;
 		break;
+	case VertexFormat::PositionNormalUv:
+		floatsPerVertex = 8;
+		break;
 	default:
 		throw std::invalid_argument("Unsupported vertex format");
 	}
@@ -53,7 +56,7 @@ void Model::create(const float* vertices, std::size_t floatCount, VertexFormat f
 	// index, number of components, data type, normalized, vertex stride, offset
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*)0);
 
-	if (format != VertexFormat::PositionNormal)
+	if (format != VertexFormat::PositionNormal && format != VertexFormat::PositionNormalUv)
 	{
 		GLsizei colorOffset = format == VertexFormat::PositionNormalColor ? 6 : 3;
 
@@ -67,6 +70,13 @@ void Model::create(const float* vertices, std::size_t floatCount, VertexFormat f
 
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(normalOffset * sizeof(float)));
+	}
+
+	if (format == VertexFormat::PositionNormalUv)
+	{
+		GLsizei uvOffset = 6;
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(uvOffset * sizeof(float)));
 	}
 
 	vertexCount = static_cast<GLsizei>(floatCount / floatsPerVertex);

@@ -76,6 +76,11 @@ DrawableObject& Scene::addObject(Model& model, ShaderProgram& shaderProgram, Mat
     return *objects.back();
 }
 
+void Scene::setSkybox(Model& model, ShaderProgram& shaderProgram, Material& material)
+{
+    skybox = std::make_unique<DrawableObject>(model, shaderProgram, material);
+}
+
 void Scene::draw(double timeSeconds)
 {
     for (const auto& program : shaderPrograms)
@@ -87,6 +92,17 @@ void Scene::draw(double timeSeconds)
     {
         object->draw(timeSeconds);
     }
+
+    if (skybox)
+    {
+        glDepthFunc(GL_LEQUAL);
+        glDepthMask(GL_FALSE);
+
+        skybox->draw(timeSeconds);
+
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);
+    }
 }
 
 void Scene::clear()
@@ -96,6 +112,7 @@ void Scene::clear()
 		light.unsubscribe(*program);
     }
 
+    skybox.reset();
     objects.clear();
 	materials.clear();
     models.clear();

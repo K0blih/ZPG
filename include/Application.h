@@ -34,7 +34,7 @@ private:
 	bool glfwinitialized = false;
 
 	std::unique_ptr<Scene> signature;
-	std::array<std::unique_ptr<Scene>, 6> scenes;
+	std::array<std::unique_ptr<Scene>, 7> scenes;
 	int activeScene = 0;
 
 	std::array<bool, GLFW_KEY_LAST + 1> heldKeys{ false };

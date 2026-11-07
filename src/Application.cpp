@@ -132,6 +132,7 @@ void Application::initialization()
 		throw std::runtime_error("GLAD initialization failed");
 	}
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	// Get version info
 	printf("OpenGL Version: %s\n", glGetString(GL_VERSION));
@@ -156,12 +157,13 @@ void Application::initialization()
 void Application::createScenes()
 {
 	// Create the scenes
-    scenes[0] = SceneFactory::createClock();
+    scenes[0] = SceneFactory::createFiona();
     scenes[1] = SceneFactory::createLightingTest();
     scenes[2] = SceneFactory::createForest();
     scenes[3] = SceneFactory::createSolarSystem();
     scenes[4] = SceneFactory::createLitSolarSystem();
     scenes[5] = SceneFactory::createNightForest();
+    scenes[6] = SceneFactory::createClassroom();
 
     signature = SceneFactory::createSignature();
 

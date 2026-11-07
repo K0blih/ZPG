@@ -31,6 +31,8 @@ public:
 	ShaderProgram& addShaderProgram(const Shader& vertexShader, const Shader& fragmentShader, bool useCamera = true, bool useLighting = false);
 	DrawableObject& addObject(Model& model, ShaderProgram& shaderProgram, Material& material);
 
+	void setSkybox(Model& model, ShaderProgram& shaderProgram, Material& material);
+
 	void draw(double timeSeconds);
 	void clear();
 
@@ -42,4 +44,6 @@ private:
 	std::vector<std::unique_ptr<Material>> materials;
 	std::vector<std::unique_ptr<ShaderProgram>> shaderPrograms;
 	std::vector<std::unique_ptr<DrawableObject>> objects;
+
+	std::unique_ptr<DrawableObject> skybox;
 };

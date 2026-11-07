@@ -1,7 +1,9 @@
 #include "Material.h"
 #include "ShaderProgram.h"
+#include  "Texture.h"
 
 #include <stdexcept>
+#include <utility>
 
 void Material::setColor(const glm::vec3& value)
 {
@@ -40,6 +42,11 @@ void Material::setUseVertexColor(bool value)
 	useVertexColor = value;
 }
 
+void Material::setTexture(std::shared_ptr<Texture> value)
+{
+	texture = std::move(value);
+}
+
 void Material::apply(ShaderProgram& shaderProgram) const
 {
 	shaderProgram.setOptionalUniform("objectColor", color);
@@ -47,4 +54,10 @@ void Material::apply(ShaderProgram& shaderProgram) const
 	shaderProgram.setOptionalUniform("specularStrength", specularStrength);
 	shaderProgram.setOptionalUniform("shininess", shininess);
 	shaderProgram.setOptionalUniform("useVertexColor", useVertexColor ? 1.0f : 0.0f);
+
+	if (texture)
+	{
+		texture->bind(0);
+		shaderProgram.setUniform("textureUnitID", 0);
+	}
 }

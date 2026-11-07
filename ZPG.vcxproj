@@ -111,7 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\glm;$(ProjectDir)libs\glad\include;$(ProjectDir)models;$(ProjectDir)include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\glm;$(ProjectDir)libs\glad\include;$(ProjectDir)models;$(ProjectDir)include;$(ProjectDir)libs\stb</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -152,6 +152,10 @@
     <None Include="shaders\clock.frag" />
     <None Include="shaders\clock.vert" />
     <None Include="shaders\constant.frag" />
+    <None Include="shaders\textured_unlit.frag" />
+    <None Include="shaders\textured_unlit.vert" />
+    <None Include="shaders\skybox.frag" />
+    <None Include="shaders\skybox.vert" />
     <None Include="shaders\forest.frag" />
     <None Include="shaders\forest.vert" />
     <None Include="shaders\ground.vert" />
@@ -168,6 +172,7 @@
     <ClInclude Include="include\DrawableObject.h" />
     <ClInclude Include="include\ICameraObserver.h" />
     <ClInclude Include="include\ILightObserver.h" />
+    <ClInclude Include="include\Image.h" />
     <ClInclude Include="include\Light.h" />
     <ClInclude Include="include\Material.h" />
     <ClInclude Include="include\Model.h" />
@@ -175,6 +180,7 @@
     <ClInclude Include="include\SceneFactory.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\ShaderProgram.h" />
+    <ClInclude Include="include\Texture.h" />
     <ClInclude Include="include\transformations\CompositeTransformation.h" />
     <ClInclude Include="include\transformations\DynamicTransformation.h" />
     <ClInclude Include="include\transformations\ITransformation.h" />
@@ -185,12 +191,19 @@
     <ClInclude Include="models\CHO0289.h" />
     <ClInclude Include="models\clock.h" />
     <ClInclude Include="models\earth.h" />
+    <ClInclude Include="models\fiona.h" />
+    <ClInclude Include="models\eb408.h" />
+    <ClInclude Include="models\whiteboard.h" />
+    <ClInclude Include="models\door.h" />
+    <ClInclude Include="models\desk.h" />
     <ClInclude Include="models\gift.h" />
     <ClInclude Include="models\moon.h" />
     <ClInclude Include="models\openGL.h" />
     <ClInclude Include="models\plain.h" />
+    <ClInclude Include="models\plain_uv.h" />
     <ClInclude Include="models\rocket.h" />
     <ClInclude Include="models\sphere.h" />
+    <ClInclude Include="models\skybox.h" />
     <ClInclude Include="models\sun.h" />
     <ClInclude Include="models\suzi_flat.h" />
     <ClInclude Include="models\suzi_smooth.h" />
@@ -201,6 +214,7 @@
     <ClCompile Include="src\Callbacks.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\DrawableObject.cpp" />
+    <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Material.cpp" />
@@ -209,6 +223,7 @@
     <ClCompile Include="src\SceneFactory.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\transformations\CompositeTransformation.cpp" />
     <ClCompile Include="src\transformations\DynamicTransformation.cpp" />
     <ClCompile Include="src\transformations\StaticTransformation.cpp" />

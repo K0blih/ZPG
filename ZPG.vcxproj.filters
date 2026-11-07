@@ -70,6 +70,18 @@
     <None Include="shaders\constant.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\textured_unlit.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\textured_unlit.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Application.h">
@@ -171,6 +183,27 @@
     <ClInclude Include="include\SceneFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="models\plain_uv.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="models\fiona.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\eb408.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\whiteboard.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\door.h">
+      <Filter>Models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -221,5 +254,19 @@
     <ClCompile Include="src\SceneFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="models\skybox.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\desk.h">
+      <Filter>Models</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

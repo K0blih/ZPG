@@ -18,8 +18,41 @@
 #include <random>
 
 #include <iterator>
+#include <array>
 #include <memory>
 #include <utility>
+
+#include <fiona.h>
+#include <EB408.h>
+#include <door.h>
+#include <desk.h>
+#include <whiteboard.h>
+#include <skybox.h>
+#include <algorithm>
+#include <stdexcept>
+#include <glm/gtc/matrix_transform.hpp>
+#include "Texture.h"
+
+void SceneFactory::addSkybox(Scene& scene)
+{
+    Shader skyVertex(GL_VERTEX_SHADER, "shaders/skybox.vert");
+    Shader skyFragment(GL_FRAGMENT_SHADER, "shaders/skybox.frag");
+    ShaderProgram& skyProgram = scene.addShaderProgram(skyVertex, skyFragment, true, false);
+    Model& skyModel = scene.addModel(skybox, std::size(skybox), VertexFormat::PositionNormalUv);
+
+    const std::array<const char*, 6> faces = {
+        "models/textures/cubemap/posx.jpg",
+        "models/textures/cubemap/negx.jpg",
+        "models/textures/cubemap/posy.jpg",
+        "models/textures/cubemap/negy.jpg",
+        "models/textures/cubemap/posz.jpg",
+        "models/textures/cubemap/negz.jpg"
+    };
+
+    Material& skyMaterial = scene.addMaterial();
+    skyMaterial.setTexture(std::make_shared<Texture>(faces));
+    scene.setSkybox(skyModel, skyProgram, skyMaterial);
+}
 
 std::unique_ptr<Scene> SceneFactory::createSignature()
 {
@@ -51,26 +84,87 @@ std::unique_ptr<Scene> SceneFactory::createSignature()
     return scene;
 }
 
-std::unique_ptr<Scene> SceneFactory::createClock()
+std::unique_ptr<Scene> SceneFactory::createFiona()
 {
     auto scene = std::make_unique<Scene>();
 
-    // Create and compile the vertex and fragment shaders
-    Shader vertex(GL_VERTEX_SHADER, "shaders/clock.vert");
-    Shader basicFragment(GL_FRAGMENT_SHADER, "shaders/clock.frag");
+    scene->configureCamera(90.0f, 270.0f, glm::vec3(0.0f, 0.9f, 4.0f), 60.0f);
 
-    // Create and link the shader program
-    ShaderProgram& basic = scene->addShaderProgram(vertex, basicFragment);
+    Shader vertexShader(GL_VERTEX_SHADER, "shaders/textured_unlit.vert");
+    Shader fragmentShader(GL_FRAGMENT_SHADER, "shaders/textured_unlit.frag");
+    ShaderProgram& program = scene->addShaderProgram(vertexShader, fragmentShader, true, false);
 
-    Model& clockMesh = scene->addModel(clockModel, std::size(clockModel), VertexFormat::PositionNormalColor);
+    Model& model = scene->addModel(fiona, std::size(fiona), VertexFormat::PositionNormalUv);
 
-    Material& clockMaterial = scene->addMaterial();
-    clockMaterial.setUseVertexColor(true);
-    DrawableObject& clockObject = scene->addObject(clockMesh, basic, clockMaterial);
+    auto texture = std::make_shared<Texture>("models/textures/fiona.png");
 
-    auto scale = TransformationFactory::makeScale(1.0f, 1.0f, -1.0f);
+    Material& material = scene->addMaterial();
+    material.setColor(glm::vec3(1.0f));
+    material.setUseVertexColor(false);
+    material.setTexture(texture);
 
-    clockObject.setTransformation(std::move(scale));
+    DrawableObject& object = scene->addObject(model, program, material);
+
+    auto transformation = std::make_unique<CompositeTransformation>();
+
+    transformation->add(TransformationFactory::makeDynamicRotation(90.0f, 0.0f, 1.0f, 0.0f));
+
+    object.setTransformation(std::move(transformation));
+
+    addSkybox(*scene);
+
+    ShaderProgram::unuse();
+    return scene;
+}
+
+std::unique_ptr<Scene> SceneFactory::createClassroom()
+{
+    auto scene = std::make_unique<Scene>();
+
+    scene->configureCamera(90.0f, 205.0f, glm::vec3(0.5f, 1.65f, 5.8f), 65.0f);
+
+    Shader vertexShader(GL_VERTEX_SHADER, "shaders/textured_unlit.vert");
+    Shader fragmentShader(GL_FRAGMENT_SHADER, "shaders/textured_unlit.frag");
+    ShaderProgram& program = scene->addShaderProgram(vertexShader, fragmentShader, true, false);
+
+    Model& roomModel = scene->addModel(EB408, std::size(EB408), VertexFormat::PositionNormalUv);
+    Material& roomMaterial = scene->addMaterial();
+    roomMaterial.setTexture(std::make_shared<Texture>("models/textures/EB408.png", Texture::Mipmaps::Disabled));
+    scene->addObject(roomModel, program, roomMaterial);
+
+    Model& boardModel = scene->addModel(whiteboard, std::size(whiteboard), VertexFormat::PositionNormalUv);
+    Material& boardMaterial = scene->addMaterial();
+    boardMaterial.setTexture(std::make_shared<Texture>("models/textures/whiteboard.png"));
+    DrawableObject& boardObject = scene->addObject(boardModel, program, boardMaterial);
+
+    auto boardTransformation = std::make_unique<CompositeTransformation>();
+    boardTransformation->add(TransformationFactory::makeTranslation(-3.8f, 0.0f, 3.6f));
+    boardTransformation->add(TransformationFactory::makeRotation(-1.0f, 0.0f, 1.0f, 0.0f));
+    boardObject.setTransformation(std::move(boardTransformation));
+
+    Model& doorModel = scene->addModel(door, std::size(door), VertexFormat::PositionNormalUv);
+    Material& doorMaterial = scene->addMaterial();
+    doorMaterial.setTexture(std::make_shared<Texture>("models/textures/door.png"));
+    DrawableObject& doorObject = scene->addObject(doorModel, program, doorMaterial);
+
+    auto doorTransformation = std::make_unique<CompositeTransformation>();
+
+    doorTransformation->add(TransformationFactory::makeTranslation(-2.38f, -0.01f, 7.82f));
+    doorTransformation->add(TransformationFactory::makeRotation(-1.0f, 0.0f, 1.0f, 0.0f));
+    doorTransformation->add(TransformationFactory::makeScale(1.11f, 1.05f, 1.0f));
+    doorObject.setTransformation(std::move(doorTransformation));
+
+    Model& deskModel = scene->addModel(desk, std::size(desk), VertexFormat::PositionNormalUv);
+    Material& deskMaterial = scene->addMaterial();
+    deskMaterial.setTexture(std::make_shared<Texture>("models/textures/desk.png"));
+    DrawableObject& deskObject = scene->addObject(deskModel, program, deskMaterial);
+
+    auto deskTransformation = std::make_unique<CompositeTransformation>();
+    deskTransformation->add(TransformationFactory::makeTranslation(-2.5f, 0.02f, 1.5f));
+    deskTransformation->add(TransformationFactory::makeRotation(180.0f, 0.0f, 1.0f, 0.0f));
+    deskObject.setTransformation(std::move(deskTransformation));
+
+    addSkybox(*scene);
 
     ShaderProgram::unuse();
     return scene;

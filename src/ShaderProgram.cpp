@@ -98,6 +98,13 @@ GLint ShaderProgram::getUniformLocation(const char* name) const
 	return location;
 }
 
+void ShaderProgram::setUniform(const char* name, int value) const
+{
+	GLint location = getUniformLocation(name);
+	use();
+	glUniform1i(location, value);
+}
+
 void ShaderProgram::setUniform(const char* name, float value) const
 {
 	GLint location = getUniformLocation(name);
